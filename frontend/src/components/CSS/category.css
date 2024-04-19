@@ -1,0 +1,83 @@
+/* category.css */
+
+.category-section {
+    /* height: 100vh; */
+    min-height: 100vh;
+    background: linear-gradient(90deg, rgba(122,135,113,1) 0%, rgba(118,136,91,1) 29%, rgba(98,114,84,1) 53%, rgba(118,136,91,1) 75%, rgba(122,135,113,1) 100%);
+}
+
+.button-container {
+    background-color: #ADBC9F;
+    padding: 20px;
+}
+
+.button-container > div {
+    margin-bottom: 10px;
+    border-radius: 0.7rem;
+    background-color: #4F6F52;
+    color: #D2E3C8;
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.category-container {
+    padding: 20px;
+}
+
+.add-category-container {
+    margin-bottom: 20px;
+}
+
+.add-category-button {
+    border: none;
+    background-color: #A1C398;
+    color: #2C7865;
+    font-weight:bolder;
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    border-radius: 0.7rem;
+    cursor: pointer;
+}
+
+.category-table-container {
+    overflow-x: auto;
+}
+
+.category-table {
+    width: 100%;
+    border-radius: 0.5rem;
+    /* border-collapse: collapse; */
+    
+}
+
+.category-table th, .category-table td {
+    border: 1px solid #dddddd;
+    padding: 12px;
+    text-align: left;
+    font-size: 1.05rem;
+    font-weight: 700;
+    
+}
+
+.category-table th {
+    background-color: #DDDDDD;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.category-table tr:hover {
+    background-color: #5b694e
+}
+
+.del-button{
+    border-radius: 0.4rem;
+    border: none;
+    background-color: rgb(222, 90, 90);
+    font-weight: bold;
+}
+
+.del-button:hover{
+    background-color: rgb(231, 121, 121);
+}
