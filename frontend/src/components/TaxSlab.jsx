@@ -4,6 +4,8 @@ import axiosInstance from '../helper/axios';
 import Navbar from './Navbar'
 import AddTaxSlab from './dialogbox/addtaxslab';
 import SideBar from './sidebar';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './CSS/taxslab.css'
 const TaxSlab = ()=>{
 
@@ -37,6 +39,15 @@ const TaxSlab = ()=>{
             await axiosInstance.post('/tax/delete', { id: taxSlabId });
             const response = await axiosInstance.post("/tax/getall", {})
             setTaxSlabs(response.data.taxSlabs);
+            toast.success('Tax Slab Deleted Successfully', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         } catch (error) {
             console.error("Error deleting tax slab:", error);
         }
@@ -48,6 +59,15 @@ const TaxSlab = ()=>{
             const response = await axiosInstance.post("/tax/getall", {})
             setTaxSlabs(response.data.taxSlabs);
             setShowAddTaxSlab(false); // Hide the modal after adding tax slab
+            toast.success('Tax Slab Added Successfully', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         } catch (error) {
             console.error("Error adding tax slab:", error);
         }
@@ -92,6 +112,7 @@ const TaxSlab = ()=>{
                         </div>
                     </div>
                 </div>
+                <ToastContainer/>
             </section>
         </>
     )

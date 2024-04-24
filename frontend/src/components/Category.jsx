@@ -3,6 +3,8 @@ import { useNavigate,useLocation  } from "react-router-dom";
 import axiosInstance from '../helper/axios';
 import Navbar from './Navbar'
 import AddCategory from './dialogbox/addcategory';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import SideBar from './sidebar';
 import './CSS/category.css'
 const Category = ()=>{
@@ -29,16 +31,21 @@ const Category = ()=>{
         };
         fetchCategory();
     }, []);
-    const handleClick = (event) => {
-        const buttonId = event.target.id;
-        const page = buttonId.slice(0, -6);
-        navigate(`/${page}`)
-    };
+
     const handleDelete = async (categoryId) => {
         try {
             await axiosInstance.post('/category/delete',{id:categoryId});
             const response = await axiosInstance.post("/category/getall", {})
             setInventory(response.data.categories);
+            toast.success('Category Deleted Successfully', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         } catch (error) {
             console.error("Error deleting category:", error);
         }
@@ -49,7 +56,25 @@ const Category = ()=>{
             const response = await axiosInstance.post("/category/getall", {})
             setInventory(response.data.categories);
             setShowAddCategory(false); // Hide the modal after adding category
+            toast.success('Category Added Successfully', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         } catch (error) {
+            toast.success('Error Addind Category', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
             console.error("Error adding category:", error);
         }
     };

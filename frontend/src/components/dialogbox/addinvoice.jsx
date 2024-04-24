@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../helper/axios';
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../CSS/addinvoice.css';
 
 function AddInvoice() {
@@ -104,6 +106,15 @@ function AddInvoice() {
       navigate('/invoice')
       console.log('Invoice saved successfully:', response.data);
     } catch (error) {
+      toast.error('Error Adding Invoice', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+    });
       console.error('Error saving invoice:', error);
     }
   };
@@ -169,6 +180,7 @@ function AddInvoice() {
           </div>
         </form>
       </div>
+      <ToastContainer/>
     </section>
   );
 }

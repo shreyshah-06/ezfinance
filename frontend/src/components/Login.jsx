@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
 
@@ -19,6 +20,15 @@ const Login = () => {
         window.location.href = "/dashboard";
       }
     } catch (error) {
+      toast.error('Bad Credentials', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+    });
       console.error('Login error:', error);
     }
   };
@@ -78,6 +88,7 @@ const Login = () => {
             </div>
           </div>
         </div>
+        <ToastContainer/>
     </div>
     </>
   );

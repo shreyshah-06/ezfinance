@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useLocation,useNavigate } from "react-router-dom";
 import axiosInstance from '../helper/axios';
 import Navbar from './Navbar';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // import AddInvoice from './dialogbox/addinvoice'; // Assuming you have an AddInvoice component
 import SideBar from './sidebar';
 import './CSS/invoice.css';
@@ -47,17 +49,35 @@ const Invoice = () => {
             const response = await axiosInstance.post("/invoice/getall", {});
             setInvoices(response.data.invoices);
             setTotalInvoiceAmt(response.data.totalInvoiceAmt);
+            toast.success('Invoice Deleted Successfully', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         } catch (error) {
             console.error("Error deleting invoice:", error);
         }
     };
     const handleFileTax = () => {
-        window.alert('Tax Filed Succesfully');
+        toast.success('GST Filed Successfully', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
     };
     return (
         <>
             <section style={{ background: "linear-gradient(90deg, rgba(122,135,113,1) 0%, rgba(118,136,91,1) 29%, rgba(98,114,84,1) 53%, rgba(118,136,91,1) 75%, rgba(122,135,113,1) 100%)" }}>
                 <Navbar />
+            {/* <ToastContainer> */}
                 <div className='row m-0 h-100'>
                     <SideBar />
                     <div className='col-md-10 invoice-container'>
@@ -66,9 +86,6 @@ const Invoice = () => {
                             <div className='col-md-5'></div>
                             <div className="total-invoice col-md-2 mx-2 d-flex align-items-center justify-content-center">Total: ₹{totalInvoiceAmt.toFixed(2)}</div>
                             <div className="total-tax-due col-md-2 d-flex align-items-center justify-content-center" onClick={handleFileTax}>Tax Due: ₹{totalTaxAmt.toFixed(2)}</div>
-                            {/* <div className="total-tax col-md-1 d-flex" style={{flexDirection:'row'}}>Total Tax: ₹{totalTaxAmt.toFixed(2)}</div> */}
-                            {/* <div className="total-tax col-md-1 d-flex align-items-center justify-content-center">Total Tax: ₹{totalTaxAmt.toFixed(2)}</div>
-                            <button className="file-tax-button col-md-1 d-flex align-items-center justify-content-center" onClick={handleFileTax}>File Tax</button> */}
                         </div>
                         <div className="invoice-table-container">
                             <table className="invoice-table">
@@ -100,6 +117,7 @@ const Invoice = () => {
                         </div>
                     </div>
                 </div>
+                <ToastContainer/>
             </section>
         </>
     )

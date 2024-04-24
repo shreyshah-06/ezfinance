@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from '../helper/axios';
 import Navbar from './Navbar';
 import AddSupplier from './dialogbox/addsupplier';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import SideBar from './sidebar';
 import './CSS/supplier.css';
 
@@ -36,6 +38,15 @@ const Supplier = () => {
             await axiosInstance.post('/supplier/delete', { id: supplierId });
             const response = await axiosInstance.post("/supplier/getall", {})
             setSuppliers(response.data.suppliers);
+            toast.success('Supplier Deleted Successfully', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         } catch (error) {
             console.error("Error deleting supplier:", error);
         }
@@ -47,7 +58,25 @@ const Supplier = () => {
             const response = await axiosInstance.post("/supplier/getall", {})
             setSuppliers(response.data.suppliers);
             setShowAddSupplier(false); // Hide the modal after adding supplier
+            toast.success('Supplier Added Successfully', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         } catch (error) {
+            toast.error('Error Adding Supplier', {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
             console.error("Error adding supplier:", error);
         }
     };
@@ -95,6 +124,7 @@ const Supplier = () => {
                         </div>
                     </div>
                 </div>
+                <ToastContainer/>
             </section>
         </>
     )
