@@ -6,6 +6,7 @@
 - [Technologies Used](#technologies-used)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Contributor](#contributor)
 
 ## Introduction
 
@@ -77,7 +78,9 @@ To use EZFinance, follow these steps:
 
 4. Explore the user-centric interface with interactive dashboards to gain real-time insights for your business.
 
+## Contributor
 
+This Project has been solely developed by Shrey Shah (UI21EC62)
   
 
 
