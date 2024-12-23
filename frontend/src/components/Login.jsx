@@ -2,97 +2,202 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {
+  Box,
+  Grid,
+  TextField,
+  Button,
+  Typography,
+  Link,
+  IconButton,
+  InputAdornment,
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import AppLogo from '../assets/ezfinance.png';
+
 const Login = () => {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setLoginData({ ...loginData, [name]: value });
   };
 
-  const handleSubmit = async(e) => {
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/login', loginData); 
-      console.log('Login response:', response.data);
-      if (typeof response.data.token !== "undefined") {
-        localStorage.setItem("token", response.data.token);
-        window.location.href = "/dashboard";
+      const response = await axios.post('http://localhost:5000/api/login', loginData);
+      if (typeof response.data.token !== 'undefined') {
+        localStorage.setItem('token', response.data.token);
+        window.location.href = '/dashboard';
       }
     } catch (error) {
       toast.error('Bad Credentials', {
-        position: "top-right",
+        position: 'top-right',
         autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        progress: undefined,
-    });
-      console.error('Login error:', error);
+      });
     }
   };
-  <style>{`
 
-  .input-field:focus {
-    border: 2px solid red !important;
-    outline: none;
-  }
-  `}</style>
   return (
     <>
-    <div className=" container-fluid gradient-form d-flex justify-content-center align-items-center"
-    style={{ overflow: "hidden", position: "relative", width:"100%",height:"100vh" ,padding: '0px !important',background: "rgb(122,135,113)",
-    background: "linear-gradient(90deg, rgba(122,135,113,1) 0%, rgba(118,136,91,1) 29%, rgba(98,114,84,1) 53%, rgba(118,136,91,1) 75%, rgba(122,135,113,1) 100%)"}}>
-          <div className="mb-5 d-flex justify-content-center align-items-center">
-          <div className="d-flex flex-column p-4" style={{backgroundColor:'#EEEEEE',borderRadius:'0.5rem'}}>
-            <div className="text-center">
-              <h3>Login</h3>
-            </div>
-            <input
-              type="email"
-              className="mt-4 p-2 mb-2 input-field:"
-              style={{ height: "6vh", borderRadius: "6px",border:'2px solid #b6d1a4', outline: 'none' }}
-              placeholder="Email"
-              name="email"
-              value={loginData.email}
-              onChange={handleInputChange}
-              required
-            />
-            <input
-              type="Password"
-              className="my-2 p-2 input-field:"
-              style={{ height: "6vh", borderRadius: "6px",border:'none',border:'2px solid #b6d1a4' , outline: 'none'  }}
-              placeholder="Password"
-              name="password"
-              value={loginData.password}
-              onChange={handleInputChange}
-              required
-            />
-            <div className="text-center pt-1 mb-3 pb-1 mt-1">
-              <button
-                type="button"
-                className="btn w-50 align-items-center justify-content-center"
-                style={{ color: "#FBFADA",backgroundColor:"#627254",fontSize:"1.1rem",fontWeight:'bold'}}
-                onClick={handleSubmit}
-                onMouseEnter={(e) => { e.target.style.transform = "scale(1.05)"; }}
-                onMouseLeave={(e) => { e.target.style.transform = "scale(1)"; }}
-              >
-                Login
-              </button>
-            </div>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        sx={{
+          height: '100vh',
+          position: 'relative',
+          background: 'linear-gradient(90deg, #7a8771 0%, #76885b 29%, #627254 100%)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Background animation */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '-10%',
+            left: '-10%',
+            width: '200%',
+            height: '200%',
+            background: 'radial-gradient(circle, rgba(98,114,84,0.3) 10%, transparent 80%)',
+            animation: 'float 20s ease-in-out infinite',
+            zIndex: 1,
+          }}
+        ></Box>
 
-            <div className="d-flex flex-row align-items-center justify-content-center pb-4 mb-4">
-              <p className="mx-1">Don't have an account?</p>
-              <p className="signup-link" style={{ textDecoration: 'none', color: 'blue' }}>Sign Up</p>
-            </div>
-          </div>
-        </div>
-        <ToastContainer/>
-    </div>
+        <Grid
+          item
+          xs={10}
+          sm={8}
+          md={5}
+          lg={4}
+          sx={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '1rem',
+            p: 4,
+            boxShadow: 4,
+            position: 'relative',
+            zIndex: 2,
+          }}
+        >
+          {/* Logo */}
+          <Box textAlign="center" mb={2}>
+            <img
+              src={AppLogo} // Replace with the actual logo path
+              alt="App Logo"
+              style={{ maxWidth: '150px', height: 'auto' }}
+            />
+          </Box>
+
+          <Typography
+            variant="h4"
+            align="center"
+            mb={3}
+            sx={{
+              background: 'linear-gradient(90deg, #627254, #FBFADA)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontWeight: 'bold',
+            }}
+          >
+            Login
+          </Typography>
+          <TextField
+            fullWidth
+            label="Email"
+            variant="outlined"
+            name="email"
+            value={loginData.email}
+            onChange={handleInputChange}
+            sx={{
+              mb: 3,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#b6d1a4',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#627254',
+                },
+              },
+            }}
+          />
+          <TextField
+            fullWidth
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            variant="outlined"
+            name="password"
+            value={loginData.password}
+            onChange={handleInputChange}
+            sx={{
+              mb: 1,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#b6d1a4',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#627254',
+                },
+              },
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={togglePasswordVisibility} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+          {/* Forgot Password */}
+          <Box textAlign="right" mb={2}>
+            <Link href="/forgot-password" underline="hover" color="primary">
+              Forgot Password?
+            </Link>
+          </Box>
+          <Box textAlign="center" mb={2}>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: '#627254',
+                color: '#FBFADA',
+                fontWeight: 'bold',
+                px: 4,
+                py: 1,
+                transition: 'all 0.3s ease',
+                ':hover': {
+                  backgroundColor: '#5c6e4b',
+                  boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)',
+                  transform: 'scale(1.05)',
+                },
+              }}
+              onClick={handleSubmit}
+            >
+              Login
+            </Button>
+          </Box>
+          <Typography align="center">
+            Don't have an account?{' '}
+            <Link href="/signup" underline="hover" color="primary">
+              Sign Up
+            </Link>
+          </Typography>
+        </Grid>
+      </Grid>
+      <ToastContainer />
     </>
   );
 };
 
 export default Login;
-

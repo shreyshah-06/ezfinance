@@ -1,29 +1,68 @@
 import React from 'react';
-import { useNavigate  } from "react-router-dom";
-const SideBar = ()=>{
-    let navigate = useNavigate();
-    const handleClick = (event) => {
-        const buttonId = event.target.id;
-        const page = buttonId.slice(0, -6);
-        if(page==="overview"){
-            navigate('/dashboard');
-            
-        }
-        else navigate(`/${page}`)
-    };
-    return(
-        <div className='col-md-2 ' style={{backgroundColor:'#ADBC9F',minHeight:'100vh'}}>
-            <div className='py-1 mt-3 ms-1 px-2 mb-3' id='overviewButton' onClick={handleClick}  style={{borderRadius:'0.7rem',backgroundColor:'#4F6F52',color:'#D2E3C8',fontWeight:'bold',fontSize:'1.1rem'}} > Overview</div>
-            <div className='py-1 px-2 ms-1 mb-3' id='inventoryButton' onClick={handleClick}  style={{borderRadius:'0.7rem',backgroundColor:'#4F6F52',color:'#D2E3C8',fontWeight:'bold',fontSize:'1.1rem'}} > Inventory</div>
-            <div className='py-1 px-2 ms-1 mb-3' id='taxButton' onClick={handleClick}  style={{borderRadius:'0.7rem',backgroundColor:'#4F6F52',color:'#D2E3C8',fontWeight:'bold',fontSize:'1.1rem'}} > Tax</div>
-            <div className='py-1 px-2 ms-1 mb-3' id='invoiceButton' onClick={handleClick}  style={{borderRadius:'0.7rem',backgroundColor:'#4F6F52',color:'#D2E3C8',fontWeight:'bold',fontSize:'1.1rem'}} > Invoice</div>
-            <div className='py-1 px-2 ms-1 mb-3' id='expenseButton'  onClick={handleClick} style={{borderRadius:'0.7rem',backgroundColor:'#4F6F52',color:'#D2E3C8',fontWeight:'bold',fontSize:'1.1rem'}} > Expense</div>
-            <div className='py-1 px-2 ms-1 mb-3' id='salesButton' onClick={handleClick}  style={{borderRadius:'0.7rem',backgroundColor:'#4F6F52',color:'#D2E3C8',fontWeight:'bold',fontSize:'1.1rem'}} > Sales</div>
-            <div className='py-1 px-2 ms-1 mb-3' id='auditButton'  onClick={handleClick} style={{borderRadius:'0.7rem',backgroundColor:'#4F6F52',color:'#D2E3C8',fontWeight:'bold',fontSize:'1.1rem'}} > Audit Logs</div>
-            <div className='py-1 px-2 ms-1 mb-3' id='supplierButton'  onClick={handleClick} style={{borderRadius:'0.7rem',backgroundColor:'#4F6F52',color:'#D2E3C8',fontWeight:'bold',fontSize:'1.1rem'}} > Supplier</div>
-            <div className='py-1 px-2 ms-1 mb-3' id='categoryButton'  onClick={handleClick}  style={{borderRadius:'0.7rem',backgroundColor:'#4F6F52',color:'#D2E3C8',fontWeight:'bold',fontSize:'1.1rem'}} > Category</div>
-        </div>
-    );
-}
+import { useNavigate } from 'react-router-dom';
+import { List, ListItemButton, ListItemText, Drawer, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 
-export default SideBar;
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
+    '& .MuiDrawer-paper': {
+      backgroundColor: '#2B3A2F', // Deep green background
+      color: '#D2E3C8', // Light beige text
+      width: '220px', // Fixed width for sidebar
+      borderRight: '1px solid #5F7E62', // Subtle border
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)', // Depth effect
+      marginTop: '64px', // Push below navbar (assuming 64px navbar height)
+      height: `calc(100vh - 64px)`, // Full height minus navbar height
+    },
+  }));
+  
+  const StyledListItem = styled(ListItemButton)(({ theme }) => ({
+    borderRadius: '12px',
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    '&:hover': {
+      backgroundColor: '#5F7E62', // Soft green hover
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Modern hover shadow
+    },
+    '&.Mui-selected': {
+      backgroundColor: '#3E5641', // Active item deeper green
+      color: '#FFFFFF', // White text
+      fontWeight: 'bold',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // Highlighted depth
+    },
+  }));
+  
+  const SideBar = () => {
+    const navigate = useNavigate();
+  
+    const menuItems = [
+      { label: 'Overview', route: '/dashboard' },
+      { label: 'Inventory', route: '/inventory' },
+      { label: 'Tax', route: '/tax' },
+      { label: 'Invoice', route: '/invoice' },
+      { label: 'Expense', route: '/expense' },
+      { label: 'Sales', route: '/sales' },
+      { label: 'Audit Logs', route: '/audit' },
+      { label: 'Supplier', route: '/supplier' },
+      { label: 'Category', route: '/category' },
+    ];
+  
+    return (
+      <StyledDrawer variant="permanent">
+        <List>
+          {menuItems.map((item, index) => (
+            <StyledListItem
+              key={index}
+              onClick={() => navigate(item.route)}
+              sx={{
+                backgroundColor: window.location.pathname === item.route ? '#5F7E62' : 'inherit',
+              }}
+            >
+              <ListItemText primary={item.label} />
+            </StyledListItem>
+          ))}
+        </List>
+      </StyledDrawer>
+    );
+  };
+  
+  export default SideBar;

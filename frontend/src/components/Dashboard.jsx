@@ -1,79 +1,252 @@
-import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
-import axiosInstance from '../helper/axios';
-import SideBar from './sidebar';
-import Chart from 'react-apexcharts';
+import React, { useState, useEffect } from "react";
+import Navbar from "./Navbar";
+import SideBar from "./sidebar";
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  LinearProgress,
+} from "@mui/material";
+import Chart from "react-apexcharts";
 
 export default function Dashboard() {
-  const [totalExpenses, setTotalExpenses] = useState(0);
-  const [totalInvoices, setTotalInvoices] = useState(0);
-  const [chartOptions, setChartOptions] = useState({
-    series: [0, 0, 0],
-    options: {
-      chart: {
-        type: 'donut',
-      },
-      labels: ['Sales', 'Expenses', 'Profit'],
-      colors: ['#36A2EB', '#FF6384', '#4CAF50'],
-    },
+  // dummy data for representation
+  const [dashboardData, setDashboardData] = useState({
+    totalRevenue: 50000,
+    totalExpenses: 200000,
+    totalTaxes: 50000,
+    totalInventoryValue: 800000,
+    outOfStockItems: 12,
+    salesTrends: [10000, 15000, 20000, 18000, 30000, 25000],
+    expenseTrends: [5000, 7000, 8000, 9000, 10000, 11000],
+    months: ["July", "August", "September", "October", "November", "December"],
+    recentTransactions: [
+      { id: 1, name: "Invoice #101", amount: 15000, date: "2024-12-20" },
+      { id: 2, name: "Invoice #102", amount: 20000, date: "2024-12-21" },
+    ],
   });
 
+  const [salesGoal, setSalesGoal] = useState(100000); // Default goal
+
   useEffect(() => {
-    const fetchSalesData = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1;
-        const currentMonthFirstDay = new Date(Date.UTC(currentYear, currentMonth - 1, 1, 0, 0, 0));
-        const currentMonthLastDay = new Date(Date.UTC(currentYear, currentMonth, 0, 23, 59, 59));
-        const fromDate = currentMonthFirstDay.toISOString();
-        const toDate = currentMonthLastDay.toISOString();
-
-        const response = await axiosInstance.post("/audit/getall", {}, {
-          params: { fromDate: fromDate, toDate: toDate },
-        });
-
-        setTotalExpenses(response.data.totalExpenses);
-        setTotalInvoices(response.data.totalInvoices);
-        setChartOptions(prevState => ({
-          ...prevState,
-          series: [response.data.totalInvoices, response.data.totalExpenses, (response.data.totalInvoices - response.data.totalExpenses)],
-        }));
+        // const response = await axiosInstance.get('/dashboard/full');
+        // setDashboardData(response.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
 
-    fetchSalesData();
+    fetchDashboardData();
   }, []);
 
   return (
     <>
-      <section style={{ minHeight: '100vh', background: "linear-gradient(90deg, rgba(122,135,113,1) 0%, rgba(118,136,91,1) 29%, rgba(98,114,84,1) 53%, rgba(118,136,91,1) 75%, rgba(122,135,113,1) 100%)" }}>
-        <Navbar />
-        <div className='row m-0 h-100'>
+      <Navbar />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          background: "linear-gradient(to right, #c4d3c8, #a8beae, #b1c5b7)",
+        }}
+      >
+        {/* Sidebar */}
+        <Box sx={{ flex: "0 0 250px" }}>
           <SideBar />
-          <div className='col-md-10 mt-4'>
-            <div className='row justify-content-around '>
-              <div className='col-2 m-2' style={{ borderRadius: '0.7rem', height: '15vh', backgroundColor: '#DDDDDD', opacity: '0.95' }}>
-                <div className='d-flex fw-bold justify-content-center pt-1'>Sales (this Month)</div>
-                <div className='pt-3 d-flex justify-content-center' style={{ fontSize: '1.1rem', fontWeight: '600' }}>₹ {totalInvoices.toFixed(2)}</div>
-              </div>
-              <div className='col-2 m-2' style={{ borderRadius: '0.7rem', height: '15vh', backgroundColor: '#DDDDDD', opacity: '0.95' }}>
-                <div className='d-flex fw-bold justify-content-center pt-1'>Profit (this Month)</div>
-                <div className='pt-3 d-flex justify-content-center' style={{ fontSize: '1.1rem', fontWeight: '600' }}>₹{(totalInvoices - totalExpenses).toFixed(2)}</div>
-              </div>
-              <div className='col-3 m-2' style={{ borderRadius: '0.7rem', height: '15vh', backgroundColor: '#DDDDDD', opacity: '0.95' }}>
-                <div className='d-flex fw-bold justify-content-center pt-1'>Expenses (this Month)</div>
-                <div className='pt-3 d-flex justify-content-center' style={{ fontSize: '1.1rem', fontWeight: '600' }}>₹{totalExpenses.toFixed(2)}</div>
-              </div>
-            </div>
-            <div className='mt-5 px-2 d-flex align-items-center justify-content-center'>
-              <Chart  width='500px' options={chartOptions.options} series={chartOptions.series} type="donut" />
-            </div>
-          </div>
-        </div>
-      </section>
+        </Box>
+
+        {/* Main Content */}
+        <Box sx={{ flexGrow: 1, mt: 8, p: 4 }}>
+          <Grid container spacing={3}>
+            {/* Summary Cards */}
+            {[
+              {
+                label: "Revenue (This Month)",
+                value: `₹${dashboardData.totalRevenue.toFixed(2)}`,
+              },
+              {
+                label: "Profit",
+                value: `₹${(
+                  dashboardData.totalRevenue - dashboardData.totalExpenses
+                ).toFixed(2)}`,
+              },
+              {
+                label: "Taxes Collected",
+                value: `₹${dashboardData.totalTaxes.toFixed(2)}`,
+              },
+              {
+                label: "Inventory Value",
+                value: `₹${dashboardData.totalInventoryValue.toFixed(2)}`,
+              },
+            ].map(({ label, value }, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Paper
+                  elevation={3}
+                  sx={{ p: 2, textAlign: "center", borderRadius: "12px" }}
+                >
+                  <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                    {label}
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{ mt: 1, fontWeight: "bold", color: "#4CAF50" }}
+                  >
+                    {value}
+                  </Typography>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Inventory Summary */}
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+              Inventory Overview
+            </Typography>
+            <Paper sx={{ p: 2, borderRadius: "12px" }}>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                Out-of-Stock Items: {dashboardData.outOfStockItems}
+              </Typography>
+              <Chart
+                options={{
+                  chart: { type: "bar" },
+                  xaxis: {
+                    categories: [
+                      "Product A",
+                      "Product B",
+                      "Product C",
+                      "Product D",
+                      "Product E",
+                    ],
+                  },
+                  colors: ["#4CAF50"],
+                }}
+                series={[
+                  { name: "Stock Levels", data: [10, 15, 8, 20, 25] }, // Mock data, replace with API
+                ]}
+                type="bar"
+                height="300"
+              />
+            </Paper>
+          </Box>
+
+          {/* Sales Trends */}
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+              Sales Trends (Last 6 Months)
+            </Typography>
+            <Chart
+              options={{
+                chart: { type: "line" },
+                xaxis: { categories: dashboardData.months },
+                colors: ["#36A2EB"],
+              }}
+              series={[
+                { name: "Sales", data: dashboardData.salesTrends },
+                { name: "Expenses", data: dashboardData.expenseTrends },
+              ]}
+              type="line"
+              height="300"
+            />
+          </Box>
+
+          {/* Sales Goal Progress */}
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+              Sales Goal Progress
+            </Typography>
+            <Paper sx={{ p: 2, borderRadius: "12px" }}>
+              <Typography variant="body1" sx={{ mb: 1 }}>
+                ₹{dashboardData.totalRevenue} / ₹{salesGoal}
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    color:
+                      dashboardData.totalRevenue >= salesGoal
+                        ? "#4CAF50"
+                        : "#FF9800",
+                  }}
+                >
+                  {" "}
+                  (
+                  {
+                    ((dashboardData.totalRevenue / salesGoal) * 100).toFixed(1)}
+                  %)
+                </span>
+              </Typography>
+              <LinearProgress
+                variant="determinate"
+                value={((dashboardData.totalRevenue / salesGoal) * 100)}
+                sx={{
+                  "& .MuiLinearProgress-bar": {
+                    backgroundColor:
+                      dashboardData.totalRevenue >= salesGoal
+                        ? "#4CAF50"
+                        : "#FF9800",
+                  },
+                }}
+              />
+              {dashboardData.totalRevenue >= salesGoal && (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 1,
+                    fontWeight: "bold",
+                    color: "#4CAF50",
+                    textAlign: "center",
+                  }}
+                >
+                  Better than expected! 🎉
+                </Typography>
+              )}
+            </Paper>
+          </Box>
+
+          {/* Recent Transactions */}
+          <Box sx={{ mt: 4 }}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+              Recent Transactions
+            </Typography>
+            <Paper sx={{ p: 2, borderRadius: "12px" }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <strong>ID</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Transaction</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Amount</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Date</strong>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {dashboardData.recentTransactions.map((transaction) => (
+                    <TableRow key={transaction.id}>
+                      <TableCell>{transaction.id}</TableCell>
+                      <TableCell>{transaction.name}</TableCell>
+                      <TableCell>₹{transaction.amount}</TableCell>
+                      <TableCell>{transaction.date}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Paper>
+          </Box>
+        </Box>
+      </Box>
     </>
   );
 }
