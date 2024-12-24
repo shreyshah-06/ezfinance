@@ -16,7 +16,7 @@ const Navbar = () => {
     <AppBar
   position="fixed"
   sx={{
-    background: 'linear-gradient(to right, #5a7962, #82a28b)', // Complementary to sidebar
+    background: 'linear-gradient(to right, #5a7962, #82a28b)',
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
   }}
 >

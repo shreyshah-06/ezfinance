@@ -5,13 +5,13 @@ import { styled } from '@mui/system';
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
     '& .MuiDrawer-paper': {
-      backgroundColor: '#2B3A2F', // Deep green background
-      color: '#D2E3C8', // Light beige text
-      width: '220px', // Fixed width for sidebar
-      borderRight: '1px solid #5F7E62', // Subtle border
-      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)', // Depth effect
-      marginTop: '64px', // Push below navbar (assuming 64px navbar height)
-      height: `calc(100vh - 64px)`, // Full height minus navbar height
+      backgroundColor: '#2B3A2F',
+      color: '#D2E3C8',
+      width: '220px',
+      borderRight: '1px solid #5F7E62',
+      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+      marginTop: '64px',
+      height: `calc(100vh - 64px)`,
     },
   }));
   
@@ -20,14 +20,14 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
     margin: theme.spacing(1),
     padding: theme.spacing(1),
     '&:hover': {
-      backgroundColor: '#5F7E62', // Soft green hover
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Modern hover shadow
+      backgroundColor: '#5F7E62',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     },
     '&.Mui-selected': {
-      backgroundColor: '#3E5641', // Active item deeper green
-      color: '#FFFFFF', // White text
+      backgroundColor: '#3E5641', 
+      color: '#FFFFFF',
       fontWeight: 'bold',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)', // Highlighted depth
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
     },
   }));
   
