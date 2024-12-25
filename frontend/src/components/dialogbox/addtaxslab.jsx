@@ -1,47 +1,65 @@
-import React, { useState } from 'react';
-import '../CSS/addtaxslab.css';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  Box,
+} from "@mui/material";
+import { toast } from "react-toastify";
 
-const AddTaxSlab = ({ isOpen, onClose, onAdd }) => {
-  const [taxRate, setTaxRate] = useState('');
-  const [taxSlabName, setTaxSlabName] = useState('');
+const AddTaxSlabDialog = ({ open, onClose, onAdd }) => {
+  const [taxSlab, setTaxSlab] = useState({ name: "", rate: "" });
 
-  const handleAddTaxSlab = () => {
-    const taxSlab = {
-      name: taxSlabName,
-      rate: taxRate
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setTaxSlab((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = () => {
+    if (!taxSlab.name || !taxSlab.rate) {
+      toast.error("Please fill in all fields", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return;
+    }
     onAdd(taxSlab);
-    setTaxRate('');
-    setTaxSlabName('');
+    setTaxSlab({ name: "", rate: "" });
   };
 
   return (
-    <>
-      {isOpen &&
-        <div className="modal-overlay">
-            <div className='fw-bold' style={{ fontWeight: "bold", fontSize: '1.5rem', padding: '0.5rem', marginBottom: '1.2rem' }}>Add New Category</div>
-            <div>
-                <input
-                  type="text"
-                  placeholder="Tax Slab Name"
-                  value={taxSlabName}
-                  onChange={(e) => setTaxSlabName(e.target.value)}
-                />
-                <input
-                  type="number"
-                  placeholder="Tax Rate (%)"
-                  value={taxRate}
-                  onChange={(e) => setTaxRate(e.target.value)}
-                />
-                <div className="button-container">
-                    <button className="cancel-button" onClick={onClose}>Cancel</button>
-                    <button className="add-button" onClick={handleAddTaxSlab}>Add</button>
-                </div>
-            </div>
-        </div>
-      }
-    </>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Add Tax Slab</DialogTitle>
+      <DialogContent>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
+          <TextField
+            label="Tax Name"
+            name="name"
+            value={taxSlab.name}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            label="Tax Rate (%)"
+            name="rate"
+            value={taxSlab.rate}
+            onChange={handleChange}
+            type="number"
+            fullWidth
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="contained" onClick={handleSubmit}>
+          Add
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
-export default AddTaxSlab;
+export default AddTaxSlabDialog;

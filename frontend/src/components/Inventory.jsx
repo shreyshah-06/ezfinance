@@ -50,17 +50,6 @@ const InventoryContainer = styled(Paper)(({ theme }) => ({
   borderRadius: "12px",
 }));
 
-const StyledFab = styled(Fab)(({ theme }) => ({
-  position: "fixed",
-  bottom: theme.spacing(4),
-  right: theme.spacing(4),
-  backgroundColor: "#5F7E62",
-  color: "#ffffff",
-  "&:hover": {
-    backgroundColor: "#3E5641",
-  },
-}));
-
 const Inventory = () => {
   const [inventory, setInventory] = useState([]);
   const [filteredInventory, setFilteredInventory] = useState([]);

@@ -1,121 +1,176 @@
-import React, { useState,useEffect } from 'react';
-import { useLocation  } from "react-router-dom";
-import axiosInstance from '../helper/axios';
-import Navbar from './Navbar'
-import AddTaxSlab from './dialogbox/addtaxslab';
-import SideBar from './sidebar';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import './CSS/taxslab.css'
-const TaxSlab = ()=>{
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  Paper,
+  IconButton,
+  Pagination
+} from "@mui/material";
+import { Add, Delete } from "@mui/icons-material";
+import { styled } from "@mui/system";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Navbar from "./Navbar";
+import SideBar from "./sidebar";
+import AddTaxSlabDialog from "./dialogbox/addtaxslab";
+import axiosInstance from "../helper/axios";
 
-    
-    const location = useLocation();
+const GradientBackground = styled(Box)(() => ({
+  display: "flex",
+  flexDirection: "row",
+  background: "linear-gradient(to right, #c4d3c8, #a8beae, #b1c5b7)",
+  minHeight: "100vh",
+  marginTop: "64px",
+}));
 
-    useEffect(() => {
-        const pathname = location.pathname;
-        const activePage = pathname.substring(1);
-        document.getElementById(`${activePage}Button`).style.backgroundColor = '#3F4F31';
-        document.getElementById(`${activePage}Button`).style.color = '#F3FDE8';
-    }, [location]);
+const TaxContainer = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  background: "#ffffff",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+  borderRadius: "12px",
+}));
 
-    const [taxSlabs, setTaxSlabs] = useState([]);
-    const [showAddTaxSlab, setShowAddTaxSlab] = useState(false);
-
-    useEffect(() => {
-        const fetchTaxSlabs = async () => {
-            try {
-                const response = await axiosInstance.post("/tax/getall", {})
-                setTaxSlabs(response.data.taxSlabs);
-            } catch (error) {
-                console.error("Error fetching tax slabs:", error);
-            }
-        };
-        fetchTaxSlabs();
-    }, []);
-
-    const handleDelete = async (taxSlabId) => {
-        try {
-            await axiosInstance.post('/tax/delete', { id: taxSlabId });
-            const response = await axiosInstance.post("/tax/getall", {})
-            setTaxSlabs(response.data.taxSlabs);
-            toast.success('Tax Slab Deleted Successfully', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-        } catch (error) {
-            console.error("Error deleting tax slab:", error);
-        }
+const TaxSlab = () => {
+  const [taxSlabs, setTaxSlabs] = useState([]);
+  const [showAddTaxSlab, setShowAddTaxSlab] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(2);
+  useEffect(() => {
+    const fetchTaxSlabs = async () => {
+      try {
+        const response = await axiosInstance.post("/tax/getall", {});
+        setTaxSlabs(response.data.taxSlabs);
+      } catch (error) {
+        console.error("Error fetching tax slabs:", error);
+      }
     };
+    fetchTaxSlabs();
+  }, []);
 
-    const handleAddTaxSlab = async (taxSlab) => {
-        try {
-            await axiosInstance.post('/tax/add', taxSlab);
-            const response = await axiosInstance.post("/tax/getall", {})
-            setTaxSlabs(response.data.taxSlabs);
-            setShowAddTaxSlab(false); // Hide the modal after adding tax slab
-            toast.success('Tax Slab Added Successfully', {
-                position: "top-right",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
-        } catch (error) {
-            console.error("Error adding tax slab:", error);
-        }
-    };
-    return(
-        <>
-            <section style={{minHeight:'100vh',background: "rgb(122,135,113)",
-        background: "linear-gradient(90deg, rgba(122,135,113,1) 0%, rgba(118,136,91,1) 29%, rgba(98,114,84,1) 53%, rgba(118,136,91,1) 75%, rgba(122,135,113,1) 100%)"}} >
-                <Navbar/>
-                <div className='row m-0 h-100'>
-                    <SideBar/>
-                    <div className='col-md-10 tax-slab-container'>
-                        <div className="add-tax-slab-container">
-                            <button className="add-tax-slab-button" onClick={() => setShowAddTaxSlab(true)}>Add Tax Slab</button>
-                        </div>
-                        <AddTaxSlab
-                            isOpen={showAddTaxSlab}
-                            onClose={() => setShowAddTaxSlab(false)}
-                            onAdd={handleAddTaxSlab}
-                        />
-                        <div className="tax-slab-table-container">
-                            <table className="tax-slab-table">
-                                <thead>
-                                    <tr>
-                                        <th>Sr. No</th>
-                                        <th>Name</th>
-                                        <th>Rate (%)</th>
-                                        <th>Delete</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {taxSlabs.map((item, index) => (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>{item.name}</td>
-                                            <td>{item.rate}</td>
-                                            <td><button className='del-button px-1 align-items-center justify-content-center d-flex' onClick={() => handleDelete(item.id)} >Delete</button></td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <ToastContainer/>
-            </section>
-        </>
-    )
-}
+  const handleDelete = async (taxSlabId) => {
+    try {
+      await axiosInstance.post("/tax/delete", { id: taxSlabId });
+      setTaxSlabs((prev) => prev.filter((slab) => slab.id !== taxSlabId));
+      toast.success("Tax Slab Deleted Successfully", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error) {
+      console.error("Error deleting tax slab:", error);
+      toast.error("Failed to delete Tax Slab.");
+    }
+  };
 
-export default TaxSlab
+  const handlePageChange = (event, value) => setCurrentPage(value);
+
+  const paginatedtaxSlabs = taxSlabs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const handleAddTaxSlab = async (taxSlab) => {
+    try {
+      await axiosInstance.post("/tax/add", taxSlab);
+      const response = await axiosInstance.post("/tax/getall", {});
+      setTaxSlabs(response.data.taxSlabs);
+      setShowAddTaxSlab(false);
+      toast.success("Tax Slab Added Successfully", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error) {
+      console.error("Error adding tax slab:", error);
+      toast.error("Failed to add tax slab", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    }
+  };
+
+  return (
+    <>
+      <Navbar />
+      <GradientBackground>
+        <Box sx={{ flex: "0 0 250px" }}>
+          <SideBar />
+        </Box>
+        <Box sx={{ flexGrow: 1, p: 4 }}>
+          <Box sx={{ mb: 3, display: "flex", gap: 2 }}>
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => setShowAddTaxSlab(true)}
+              sx={{ mb: 2 }}
+            >
+              Add Tax Slab
+            </Button>
+          </Box>
+          <TaxContainer>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+              Tax Slabs
+            </Typography>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: "bold" }}>Sr. No</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Name</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Rate (%)</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }} align="center">
+                    Actions
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {paginatedtaxSlabs.length > 0 ? (
+                  paginatedtaxSlabs.map((item, index) => (
+                    <TableRow key={item.id} hover>
+                      <TableCell> {(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.rate}</TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          color="error"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center">
+                      No data available
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+              <Pagination
+                count={Math.ceil(taxSlabs.length / itemsPerPage)}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+              />
+            </Box>
+          </TaxContainer>
+        </Box>
+      </GradientBackground>
+      <AddTaxSlabDialog
+        open={showAddTaxSlab}
+        onClose={() => setShowAddTaxSlab(false)}
+        onAdd={handleAddTaxSlab}
+      />
+      <ToastContainer />
+    </>
+  );
+};
+
+export default TaxSlab;
