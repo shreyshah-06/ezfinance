@@ -9,14 +9,6 @@ import SideBar from './sidebar';
 import './CSS/category.css'
 const Category = ()=>{
 
-    let navigate = useNavigate(); 
-    const location = useLocation();
-    useEffect(() => {
-        const pathname = location.pathname;
-        const activePage = pathname.substring(1);
-        document.getElementById(`${activePage}Button`).style.backgroundColor = '#3F4F31';
-        document.getElementById(`${activePage}Button`).style.color = '#F3FDE8';
-    }, [location]);
     const [inventory, setInventory] = useState([]);
     const [showAddCategory, setShowAddCategory] = useState(false);
     useEffect(() => {

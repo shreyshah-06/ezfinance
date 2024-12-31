@@ -23,6 +23,8 @@ import {
   MenuItem,
   IconButton,
   Pagination,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -60,6 +62,18 @@ const Inventory = () => {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    serialNumber: "",
+    model: "",
+    categoryId: "",
+    sellingPrice: "",
+    taxId: "",
+    supplierId: "",
+    purchasePrice: "",
+    quantity: "",
+  });
+  const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
 
   useEffect(() => {
     const fetchInventory = async () => {
@@ -73,6 +87,7 @@ const Inventory = () => {
     };
     fetchInventory();
   }, []);
+
   const filterAndSortInventory = () => {
     let filtered = inventory.filter((item) => {
       const matchesSearch =
@@ -128,8 +143,10 @@ const Inventory = () => {
       setInventory(inventory.filter((item) => item.id !== itemToDelete.id));
       setOpenDialog(false);
       setItemToDelete(null);
+      setToast({ open: true, message: "Item deleted successfully", severity: "success" });
     } catch (error) {
       console.error("Error deleting item:", error);
+      setToast({ open: true, message: "Error deleting item", severity: "error" });
     }
   };
 
@@ -168,6 +185,48 @@ const Inventory = () => {
     link.href = url;
     link.download = "inventory.csv";
     link.click();
+  };
+
+  const handleAddProductClick = () => {
+    setOpenAddDialog(true);
+  };
+
+  const handleAddProductClose = () => {
+    setOpenAddDialog(false);
+    setNewProduct({
+      serialNumber: "",
+      model: "",
+      categoryId: "",
+      sellingPrice: "",
+      taxId: "",
+      supplierId: "",
+      purchasePrice: "",
+      quantity: "",
+    });
+  };
+
+  const handleAddProductSubmit = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axiosInstance.post("/api/product/add", newProduct,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
+      setInventory([...inventory, newProduct]);
+      setOpenAddDialog(false);
+      setToast({ open: true, message: "Product added successfully", severity: "success" });
+    } catch (error) {
+      console.error("Error adding product:", error);
+      setToast({ open: true, message: "Error adding product", severity: "error" });
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewProduct((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -254,6 +313,14 @@ const Inventory = () => {
             >
               Export Data
             </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddProductClick}
+              sx={{ padding: "6px 10px", borderRadius: "6px" }}
+            >
+              Add Product
+            </Button>
           </Box>
 
           <InventoryContainer>
@@ -281,10 +348,6 @@ const Inventory = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* {filteredInventory.length > 0 ? (
-                  filteredInventory.map((item, index) => (
-                    <TableRow key={index} hover> */}
-                {/* <TableCell>{index + 1}</TableCell> */}
                 {paginatedInventory.length > 0 ? (
                   paginatedInventory.map((item, index) => (
                     <TableRow
@@ -347,30 +410,136 @@ const Inventory = () => {
         </Box>
       </GradientBackground>
 
-      {/* Confirmation Dialog */}
-      <Dialog open={openDialog} onClose={cancelDelete}>
+      {/* Add Product Dialog */}
+      <Dialog open={openAddDialog} onClose={handleAddProductClose} fullWidth>
+        <DialogTitle>Add Product</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Serial Number"
+            type="text"
+            fullWidth
+            name="serialNumber"
+            value={newProduct.serialNumber}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Model"
+            type="text"
+            fullWidth
+            name="model"
+            value={newProduct.model}
+            onChange={handleInputChange}
+          />
+          <TextField          margin="dense"
+          label="Category ID"
+          type="text"
+          fullWidth
+          name="categoryId"
+          value={newProduct.categoryId}
+          onChange={handleInputChange}
+        />
+        <TextField
+          margin="dense"
+          label="Selling Price"
+          type="number"
+          fullWidth
+          name="sellingPrice"
+          value={newProduct.sellingPrice}
+          onChange={handleInputChange}
+        />
+        <TextField
+          margin="dense"
+          label="Tax ID"
+          type="text"
+          fullWidth
+          name="taxId"
+          value={newProduct.taxId}
+          onChange={handleInputChange}
+        />
+        <TextField
+          margin="dense"
+          label="Supplier ID"
+          type="text"
+          fullWidth
+          name="supplierId"
+          value={newProduct.supplierId}
+          onChange={handleInputChange}
+        />
+        <TextField
+          margin="dense"
+          label="Purchase Price"
+          type="number"
+          fullWidth
+          name="purchasePrice"
+          value={newProduct.purchasePrice}
+          onChange={handleInputChange}
+        />
+        <TextField
+          margin="dense"
+          label="Quantity"
+          type="number"
+          fullWidth
+          name="quantity"
+          value={newProduct.quantity}
+          onChange={handleInputChange}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleAddProductClose} color="primary">
+          Cancel
+        </Button>
+        <Button onClick={handleAddProductSubmit} color="success">
+          Add Product
+        </Button>
+      </DialogActions>
+    </Dialog>
+    {/* Delete Confirmation Dialog */}
+    <Dialog open={openDialog} onClose={cancelDelete}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete the item "{itemToDelete?.model}"?
+            Are you sure you want to delete this product? This action cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={cancelDelete} color="primary">
             Cancel
           </Button>
-          <Button onClick={confirmDelete} color="error" autoFocus>
+          <Button onClick={confirmDelete} color="error">
             Delete
           </Button>
         </DialogActions>
       </Dialog>
-      <InventoryDetailsDialog
-        open={openDetailsDialog}
-        onClose={closeDetailsDialog}
-        details={itemDetails}
-      />
+
+      {/* Product Details Dialog */}
+      {itemDetails && (
+        <InventoryDetailsDialog
+          open={openDetailsDialog}
+          onClose={closeDetailsDialog}
+          itemDetails={itemDetails}
+        />
+      )}
+
+      {/* Snackbar for Toast Messages */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={6000}
+        onClose={() => setToast({ ...toast, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setToast({ ...toast, open: false })}
+          severity={toast.severity}
+          sx={{ width: "100%" }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
 
 export default Inventory;
+

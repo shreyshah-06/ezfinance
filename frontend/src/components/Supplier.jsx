@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from '../helper/axios';
 import Navbar from './Navbar';
 import AddSupplier from './dialogbox/addsupplier';
@@ -9,15 +8,7 @@ import SideBar from './sidebar';
 import './CSS/supplier.css';
 
 const Supplier = () => {
-    const location = useLocation();
-
-    useEffect(() => {
-        const pathname = location.pathname;
-        const activePage = pathname.substring(1);
-        document.getElementById(`${activePage}Button`).style.backgroundColor = '#3F4F31';
-        document.getElementById(`${activePage}Button`).style.color = '#F3FDE8';
-    }, [location]);
-
+    
     const [suppliers, setSuppliers] = useState([]);
     const [showAddSupplier, setShowAddSupplier] = useState(false);
 

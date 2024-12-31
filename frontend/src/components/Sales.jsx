@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import './CSS/sale.css';
 import axiosInstance from '../helper/axios';
 import SideBar from './sidebar';
 import Navbar from './Navbar';
 
 const Sales = () => {
-    const location = useLocation();
-    useEffect(() => {
-        const pathname = location.pathname;
-        const activePage = pathname.substring(1);
-        document.getElementById(`${activePage}Button`).style.backgroundColor = '#3F4F31';
-        document.getElementById(`${activePage}Button`).style.color = '#F3FDE8';
-    }, [location]);
 
     const [sales, setSales] = useState([]);
     const [products, setProducts] = useState([]);
