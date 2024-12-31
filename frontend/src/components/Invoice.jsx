@@ -12,12 +12,15 @@ import {
   Paper,
   IconButton,
   Grid,
-  Modal,
-  Dialog,
-  DialogTitle,
-  DialogContent,
+  Pagination
 } from "@mui/material";
-import { Add, Delete, AttachMoney, AccountBalance, Visibility } from "@mui/icons-material";
+import {
+  Add,
+  Delete,
+  AttachMoney,
+  AccountBalance,
+  Visibility,
+} from "@mui/icons-material";
 import { styled } from "@mui/system";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,6 +28,7 @@ import Navbar from "./Navbar";
 import SideBar from "./sidebar";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../helper/axios";
+import InvoiceDetails from "../components/dialogbox/invoiceDetails";
 
 const GradientBackground = styled(Box)(() => ({
   display: "flex",
@@ -48,8 +52,8 @@ const InfoBox = styled(Paper)(({ theme }) => ({
   justifyContent: "space-between",
   borderRadius: "12px",
   background: "#ffffff",
-  height: "80px", 
-  width: "100%", 
+  height: "80px",
+  width: "100%",
   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
   transition: "transform 0.2s, box-shadow 0.2s",
   "&:hover": {
@@ -75,6 +79,8 @@ const Invoice = () => {
   const [totalTaxAmt, setTotalTaxAmt] = useState(0);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [viewOpen, setViewOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -128,6 +134,13 @@ const Invoice = () => {
     setSelectedInvoice(null);
     setViewOpen(false);
   };
+
+  const handlePageChange = (event, value) => setCurrentPage(value);
+
+  const paginatedInvoices = invoices.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <>
@@ -186,7 +199,7 @@ const Invoice = () => {
                   onClick={handleFileTax}
                   sx={{
                     borderRadius: "12px",
-                    height: "48px", 
+                    height: "48px",
                     width: "48%",
                     fontWeight: "bold",
                     textTransform: "none",
@@ -200,7 +213,7 @@ const Invoice = () => {
                   onClick={handleAddInvoice}
                   sx={{
                     borderRadius: "12px",
-                    height: "48px", 
+                    height: "48px",
                     width: "48%",
                     fontWeight: "bold",
                     textTransform: "none",
@@ -220,18 +233,32 @@ const Invoice = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell><strong>Invoice Number</strong></TableCell>
-                    <TableCell><strong>Customer Name</strong></TableCell>
-                    <TableCell><strong>Date</strong></TableCell>
-                    <TableCell><strong>Amount</strong></TableCell>
-                    <TableCell><strong>Tax Amount</strong></TableCell>
-                    <TableCell><strong>Total Amount</strong></TableCell>
-                    <TableCell align="center"><strong>Actions</strong></TableCell>
+                    <TableCell>
+                      <strong>Invoice Number</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Customer Name</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Date</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Amount</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Tax Amount</strong>
+                    </TableCell>
+                    <TableCell>
+                      <strong>Total Amount</strong>
+                    </TableCell>
+                    <TableCell align="center">
+                      <strong>Actions</strong>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {invoices.length > 0 ? (
-                    invoices.map((invoice) => (
+                  {paginatedInvoices.length > 0 ? (
+                    paginatedInvoices.map((invoice) => (
                       <TableRow key={invoice.id} hover>
                         <TableCell>{invoice.invoiceNumber}</TableCell>
                         <TableCell>{invoice.customerName}</TableCell>
@@ -266,27 +293,23 @@ const Invoice = () => {
                   )}
                 </TableBody>
               </Table>
+              <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+                <Pagination
+                  count={Math.ceil(invoices.length / itemsPerPage)}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  color="primary"
+                />
+              </Box>
             </TableContainer>
           </InvoiceContainer>
         </Box>
       </GradientBackground>
-      <Dialog open={viewOpen} onClose={closeViewDetails} maxWidth="sm" fullWidth>
-        <DialogTitle>Invoice Details</DialogTitle>
-        <DialogContent>
-          {selectedInvoice ? (
-            <>
-              <Typography><strong>Invoice Number:</strong> {selectedInvoice.invoiceNumber}</Typography>
-              <Typography><strong>Customer Name:</strong> {selectedInvoice.customerName}</Typography>
-              <Typography><strong>Date:</strong> {selectedInvoice.date.split("T")[0]}</Typography>
-              <Typography><strong>Amount:</strong> ₹{(selectedInvoice.totalAmount - selectedInvoice.totalTax).toFixed(2)}</Typography>
-              <Typography><strong>Tax:</strong> ₹{selectedInvoice.totalTax.toFixed(2)}</Typography>
-              <Typography><strong>Total:</strong> ₹{selectedInvoice.totalAmount.toFixed(2)}</Typography>
-            </>
-          ) : (
-            <Typography>No details available.</Typography>
-          )}
-        </DialogContent>
-      </Dialog>
+      <InvoiceDetails
+        open={viewOpen}
+        onClose={closeViewDetails}
+        invoice={selectedInvoice}
+      />
       <ToastContainer />
     </>
   );

@@ -35,9 +35,9 @@ function AddInvoice() {
     const discountAmount = (totalBeforeTax * discount) / 100;
     const totalWithDiscount = totalBeforeTax - discountAmount;
     const taxAmount = (totalWithDiscount * taxRate) / 100;
-    const totalAmount = totalWithDiscount + taxAmount;
-    return totalAmount;
+    return totalWithDiscount + taxAmount;
   };
+  
 
   useEffect(() => {
     const fetchInventory = async () => {
@@ -48,7 +48,6 @@ function AddInvoice() {
         console.error("Error fetching inventory:", error);
       }
     };
-
     const fetchTaxSlabs = async () => {
       try {
         const response = await axiosInstance.post("/tax/getall", {});
@@ -68,14 +67,23 @@ function AddInvoice() {
       const taxRateObj = taxRates.find(rate => rate.id === product.taxId);
       const taxRate = taxRateObj ? taxRateObj.rate : 0;
       const newProducts = [...products];
-      newProducts[index].productId = product.id;
-      newProducts[index].productName = value;
-      newProducts[index].price = product.sellingPrice;
-      newProducts[index].tax = taxRate;
+      newProducts[index] = {
+        ...newProducts[index],
+        productId: product.id,
+        productName: value,
+        price: product.sellingPrice,
+        tax: taxRate,
+        total: calculateTotal(
+          newProducts[index].quantity,
+          product.sellingPrice,
+          taxRate,
+          newProducts[index].discountPercentage
+        ),
+      };
       setProducts(newProducts);
     }
   };
-
+  
   const handleQuantityChange = (index, value) => {
     const newProducts = [...products];
     newProducts[index].quantity = parseInt(value) || 0;
@@ -237,19 +245,18 @@ function AddInvoice() {
             </TableBody>
           </Table>
 
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={addProduct}
-            sx={{ mt: 2 }}
-          >
-            Add Product
-          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+            <Button variant="contained" color="primary" onClick={addProduct}>
+              Add Product
+            </Button>
+            <Typography variant="h6">
+              Bill Amount: ₹{billAmount.toFixed(2)}
+            </Typography>
+          </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-            <Typography variant="h6">Bill Amount: ₹{billAmount.toFixed(2)}</Typography>
-            <Button type="submit" variant="contained" color="primary">
-              Add Invoice
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+            <Button type="submit" variant="contained" color="success">
+              Save Invoice
             </Button>
           </Box>
         </form>

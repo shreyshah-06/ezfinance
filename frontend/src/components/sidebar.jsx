@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { List, ListItemButton, ListItemText, Drawer, Typography } from '@mui/material';
+import { List, ListItemButton, ListItemText, Drawer } from '@mui/material';
 import { styled } from '@mui/system';
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({

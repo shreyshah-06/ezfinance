@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { AppBar, Toolbar, Button } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Logo from '../assets/ezfinance.png';
 
