@@ -12,7 +12,10 @@ import {
   Paper,
   IconButton,
   Grid,
-  Pagination
+  Pagination,
+  TextField,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import {
   Add,
@@ -23,6 +26,8 @@ import {
 } from "@mui/icons-material";
 import { styled } from "@mui/system";
 import { toast, ToastContainer } from "react-toastify";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./Navbar";
 import SideBar from "./sidebar";
@@ -81,6 +86,11 @@ const Invoice = () => {
   const [viewOpen, setViewOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const [filteredInvoice, setFilteredInvoice] = useState([]);
+  const [filter, setFilter] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [specificDate, setSpecificDate] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -88,6 +98,7 @@ const Invoice = () => {
       try {
         const response = await axiosInstance.post("/invoice/getall", {});
         setInvoices(response.data.invoices);
+        setFilteredInvoice(response.data.invoices);
         setTotalInvoiceAmt(response.data.totalInvoiceAmt);
         setTotalTaxAmt(
           response.data.invoices.reduce(
@@ -125,6 +136,60 @@ const Invoice = () => {
     });
   };
 
+  const filterAndSortInvoices = () => {
+    let filtered = invoices.filter((invoice) => {
+      const matchesSearch =
+        invoice.customerName
+          .toLowerCase()
+          .includes(String(filter).toLowerCase()) ||
+        String(invoice.invoiceNumber)
+          .toLowerCase()
+          .includes(String(filter).toLowerCase());
+
+      const matchesDate =
+        !specificDate ||
+        new Date(invoice.date).toDateString() ===
+          new Date(specificDate).toDateString();
+
+      return matchesSearch && matchesDate;
+    });
+
+    if (sortBy) {
+      filtered.sort((a, b) => {
+        let valueA = a[sortBy];
+        let valueB = b[sortBy];
+
+        if (sortBy === "date") {
+          valueA = new Date(valueA);
+          valueB = new Date(valueB);
+        }
+
+        if (sortBy === "totalAmount" || sortBy === "taxAmount") {
+          valueA = parseFloat(valueA) || 0;
+          valueB = parseFloat(valueB) || 0;
+        }
+
+        if (sortOrder === "asc") return valueA > valueB ? 1 : -1;
+        if (sortOrder === "desc") return valueA < valueB ? 1 : -1;
+        return 0;
+      });
+    }
+
+    setFilteredInvoice(filtered);
+  };
+
+  useEffect(() => {
+    filterAndSortInvoices();
+  }, [filter, specificDate, sortBy, sortOrder, invoices]);
+
+  // Handlers
+  const handleFilterChange = (event) => setFilter(event.target.value);
+  const handleSortChange = (event) => setSortBy(event.target.value);
+  const toggleSortOrder = () =>
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  const handleSpecificDateChange = (event) =>
+    setSpecificDate(event.target.value);
+
   const handleViewDetails = (invoice) => {
     setSelectedInvoice(invoice);
     setViewOpen(true);
@@ -137,7 +202,7 @@ const Invoice = () => {
 
   const handlePageChange = (event, value) => setCurrentPage(value);
 
-  const paginatedInvoices = invoices.slice(
+  const paginatedInvoices = filteredInvoice.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -151,7 +216,7 @@ const Invoice = () => {
         </Box>
         <Box sx={{ flexGrow: 1, p: 4 }}>
           <Grid container spacing={3} sx={{ mb: 3 }}>
-            {/* Data Display Boxes: Invoice Amount and Tax Due in a single row */}
+            {/* Top Row: Invoice Amount and Tax Due */}
             <Grid item xs={12} sm={6} md={4}>
               <InfoBox>
                 <IconWrapper>
@@ -182,7 +247,7 @@ const Invoice = () => {
                 </Box>
               </InfoBox>
             </Grid>
-            {/* Buttons: Add Invoice and File Tax */}
+            {/* Action Buttons */}
             <Grid item xs={12} sm={6} md={4}>
               <Box
                 sx={{
@@ -221,6 +286,88 @@ const Invoice = () => {
                 >
                   Add Invoice
                 </Button>
+              </Box>
+            </Grid>
+
+            {/* Filter and Sorting Row */}
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 2,
+                  alignItems: "center",
+                  padding: "16px",
+                  backgroundColor: "#f5f5f5",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                {/* Search Field */}
+                <TextField
+                  label="Search by Customer Name or Invoice Number"
+                  variant="outlined"
+                  value={filter}
+                  onChange={handleFilterChange}
+                  sx={{
+                    flex: 2,
+                    "& .MuiInputBase-root": {
+                      backgroundColor: "#e9efeb",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#030403",
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      top: "-6px",
+                    },
+                  }}
+                />
+
+                {/* Sort By Dropdown */}
+                <Select
+                  value={sortBy}
+                  onChange={handleSortChange}
+                  displayEmpty
+                  variant="outlined"
+                  sx={{
+                    flex: 1,
+                    backgroundColor: "#e9efeb",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#030403",
+                    },
+                  }}
+                >
+                  <MenuItem value="">Sort By</MenuItem>
+                  <MenuItem value="totalAmount">Total Amount</MenuItem>
+                  <MenuItem value="taxAmount">Tax Amount</MenuItem>
+                  <MenuItem value="date">Date</MenuItem>
+                </Select>
+
+                {/* Sort Order Toggle */}
+                <IconButton onClick={toggleSortOrder} sx={{ color: "#030403" }}>
+                  {sortOrder === "asc" ? (
+                    <ArrowUpwardIcon sx={{ color: "#030403" }} />
+                  ) : (
+                    <ArrowDownwardIcon sx={{ color: "#030403" }} />
+                  )}
+                </IconButton>
+
+                {/* Date Filter */}
+                <TextField
+                  type="date"
+                  value={specificDate}
+                  onChange={handleSpecificDateChange}
+                  variant="outlined"
+                  sx={{
+                    flex: 1,
+                    "& .MuiInputBase-root": {
+                      backgroundColor: "#e9efeb",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#030403",
+                    },
+                  }}
+                />
               </Box>
             </Grid>
           </Grid>
@@ -295,7 +442,7 @@ const Invoice = () => {
               </Table>
               <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
                 <Pagination
-                  count={Math.ceil(invoices.length / itemsPerPage)}
+                  count={Math.ceil(filteredInvoice.length / itemsPerPage)}
                   page={currentPage}
                   onChange={handlePageChange}
                   color="primary"
