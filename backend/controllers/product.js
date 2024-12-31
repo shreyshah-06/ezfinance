@@ -3,7 +3,18 @@ const Product = require("../models/product");
 const jwt = require("jsonwebtoken");
 const addProduct = async (req, res) => {
     try {
-      const { userId, serialNumber, model, categoryId, sellingPrice, taxId, supplierId, purchasePrice ,quantity} = req.body;
+      const {serialNumber, model, categoryId, sellingPrice, taxId, supplierId, purchasePrice ,quantity} = req.body;
+      const token = req.headers.authorization.split(" ")[1];  // Get the token from the Authorization header
+      let userId;
+  
+      // Verify JWT token
+      jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
+        if (err) {
+          return res.status(401).json({ error: "Unauthorized" });
+        } else {
+          userId = decodedToken.id;  // Extract the userId from the decoded token
+        }
+      });
       const newProduct = await Product.create({
         userId,
         serialNumber,
