@@ -4,13 +4,31 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../CSS/addinvoice.css';
+import {
+  Typography,
+  TextField,
+  Button,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Select,
+  MenuItem,
+  IconButton,
+  Box,
+  Paper
+} from '@mui/material';
+import { Delete } from '@mui/icons-material';
 
 function AddInvoice() {
   const [customerName, setCustomerName] = useState('');
   const [date, setDate] = useState(new Date().toISOString().substr(0, 10));
-  const [products, setProducts] = useState([{productId: '', productName: '', quantity: 0, discount: 0, tax: 0, total: 0 }]);
+  const [products, setProducts] = useState([
+    { productId: '', productName: '', quantity: 0, discountPercentage: 0, tax: 0, total: 0 }
+  ]);
   const [inventory, setInventory] = useState([]);
-  const [taxRates, setTaxRates] = useState({});
+  const [taxRates, setTaxRates] = useState([]);
 
   const calculateTotal = (quantity, price, taxRate, discount) => {
     const totalBeforeTax = quantity * price;
@@ -60,9 +78,9 @@ function AddInvoice() {
 
   const handleQuantityChange = (index, value) => {
     const newProducts = [...products];
-    newProducts[index].quantity = parseInt(value);
+    newProducts[index].quantity = parseInt(value) || 0;
     newProducts[index].total = calculateTotal(
-      parseInt(value),
+      newProducts[index].quantity,
       newProducts[index].price,
       newProducts[index].tax,
       newProducts[index].discountPercentage
@@ -72,22 +90,31 @@ function AddInvoice() {
 
   const handleDiscountChange = (index, value) => {
     const newProducts = [...products];
-    newProducts[index].discountPercentage = parseFloat(value);
+    newProducts[index].discountPercentage = parseFloat(value) || 0;
     newProducts[index].total = calculateTotal(
       newProducts[index].quantity,
       newProducts[index].price,
       newProducts[index].tax,
-      parseFloat(value)
+      newProducts[index].discountPercentage
     );
     setProducts(newProducts);
   };
 
   const addProduct = () => {
-    setProducts([...products, { productName: '', price: 0,  quantity: 0, discountPercentage: 0, tax: 0, total: 0 }]);
+    setProducts([
+      ...products,
+      { productId: '', productName: '', quantity: 0, discountPercentage: 0, tax: 0, total: 0 }
+    ]);
+  };
+
+  const deleteProduct = (index) => {
+    const newProducts = products.filter((_, i) => i !== index);
+    setProducts(newProducts);
   };
 
   let navigate = useNavigate();
-  const handleSubmit = async(event) => {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const invoiceData = {
@@ -101,9 +128,8 @@ function AddInvoice() {
           taxPercentage: product.tax
         }))
       };
-      console.log(invoiceData)
       const response = await axiosInstance.post('/invoice/add', invoiceData);
-      navigate('/invoice')
+      navigate('/invoice');
       console.log('Invoice saved successfully:', response.data);
     } catch (error) {
       toast.error('Error Adding Invoice', {
@@ -114,7 +140,7 @@ function AddInvoice() {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-    });
+      });
       console.error('Error saving invoice:', error);
     }
   };
@@ -122,66 +148,114 @@ function AddInvoice() {
   const billAmount = products.reduce((acc, product) => acc + product.total, 0);
 
   return (
-    <section className='add-invoice-dialog-container'>
-      <div className='add-invoice-dialog-main'>
-        <div className='py-3 d-flex align-items-center justify-content-center' style={{fontSize:'1.9rem', fontWeight:'bolder'}}>Add Invoice</div>
-        <form className='add-invoice-dialog-form' onSubmit={handleSubmit}>
-          <div className='d-flex align-items-center justify-content-center'>
-            <div className='px-4 py-4'>
-              <label htmlFor="customerName" className='fw-bold mx-2' >Customer Name:</label>
-              <input type="text" id="customerName" className='' placeholder='Customer Name' style={{border:'2px solid black',color:'black',fontWeight:'700'}} value={customerName} onChange={(e) => setCustomerName(e.target.value)} required /><br /><br />
-            </div>
-            <div className='px-4 py-4'>
-              <label htmlFor="date" className='fw-bold mx-2' >Date:</label>
-              <input type="date" id="date"  style={{border:'2px solid black'}} value={date} onChange={(e) => setDate(e.target.value)} required /><br /><br />
-            </div>
-          </div>
+    <Box sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'linear-gradient(to right, #c4d3c8, #a8beae, #b1c5b7)', minHeight: '100vh' }}>
+      <Paper elevation={3} sx={{ p: 3, width: '100%', maxWidth: '1200px' }}>
+        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#495057' }}>
+          Add Invoice
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+            <TextField
+              label="Customer Name"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              required
+              fullWidth
+              sx={{ mr: 2 }}
+            />
+            <TextField
+              label="Date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+            />
+          </Box>
 
-          <table className='add-invoice-dialog-table'>
-            <thead>
-              <tr>
-                <th className='p-1' style={{backgroundColor:'#76885B'}} >Product Name</th>
-                <th className='p-1' style={{backgroundColor:'#76885B'}} >Price</th>
-                <th className='p-1' style={{backgroundColor:'#76885B'}} >Quantity</th>
-                <th className='p-1' style={{backgroundColor:'#76885B'}} >Discount (%)</th>
-                <th className='p-1' style={{backgroundColor:'#76885B'}} >Tax Rate (%)</th>
-                <th className='p-1' style={{backgroundColor:'#76885B'}} >Total Amount</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Product Name</TableCell>
+                <TableCell>Price</TableCell>
+                <TableCell>Quantity</TableCell>
+                <TableCell>Discount (%)</TableCell>
+                <TableCell>Tax Rate (%)</TableCell>
+                <TableCell>Total Amount</TableCell>
+                <TableCell>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {products.map((product, index) => (
-                <tr key={index}>
-                  <td className='py-1'>
-                    <select style={{backgroundColor:'#DDDDDD',borderRadius:' 4px'}} className='mx-1' value={product.productName} onChange={(e) => handleProductNameChange(index, e.target.value)} required>
-                      <option value="">Select Product</option>
+                <TableRow key={index}>
+                  <TableCell>
+                    <Select
+                      value={product.productName}
+                      onChange={(e) => handleProductNameChange(index, e.target.value)}
+                      fullWidth
+                      required
+                    >
+                      <MenuItem value="">Select Product</MenuItem>
                       {inventory.map(item => (
-                        <option key={item.id} value={item.model}>{item.model}</option>
+                        <MenuItem key={item.id} value={item.model}>{item.model}</MenuItem>
                       ))}
-                    </select>
-                  </td>
-                  <td className='py-1'><input type="number" className='mx-1' value={product.price} style={{backgroundColor:'#DDDDDD'}} readOnly /></td>
-                  <td className='py-1'><input type="number" className='mx-1' value={product.quantity}  style={{backgroundColor:'#DDDDDD'}} onChange={(e) => handleQuantityChange(index, e.target.value)} required /></td>
-                  <td className='py-1'><input type="number" className='mx-1' value={product.discountPercentage} style={{backgroundColor:'#DDDDDD'}}  onChange={(e) => handleDiscountChange(index, e.target.value)} required /></td>
-                  <td className='py-1'><input type="number" className='mx-1' value={product.tax}  style={{backgroundColor:'#DDDDDD'}} readOnly/></td>
-                  <td className='py-1'><input type="number" className='mx-1' value={product.total} style={{backgroundColor:'#DDDDDD'}}  readOnly /></td>
-                </tr>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <TextField value={product.price} InputProps={{ readOnly: true }} fullWidth />
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      type="number"
+                      value={product.quantity}
+                      onChange={(e) => handleQuantityChange(index, e.target.value)}
+                      fullWidth
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <TextField
+                      type="number"
+                      value={product.discountPercentage}
+                      onChange={(e) => handleDiscountChange(index, e.target.value)}
+                      fullWidth
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <TextField value={product.tax} InputProps={{ readOnly: true }} fullWidth />
+                  </TableCell>
+                  <TableCell>
+                    <TextField value={product.total} InputProps={{ readOnly: true }} fullWidth />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => deleteProduct(index)}>
+                      <Delete color="error" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-          <br />
-          <button type="button" className='add-invoice-dialog-addproduct' onClick={addProduct}>Add Product</button>
-          <br /><br />
-          <div className='bill-amount'>
-            <div className='fw-bold' style={{fontSize:'1.1rem'}}>Bill Amount: &nbsp;</div>
-            <div className='billamt-div px-3'>{billAmount}</div>
-          </div>
-          <div className='mt-1' style={{display:'flex',justifyContent: 'flex-end'}}>
-            <input type="submit" className='add-invoice-dialog-submit' value="Add Invoice" />
-          </div>
+            </TableBody>
+          </Table>
+
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={addProduct}
+            sx={{ mt: 2 }}
+          >
+            Add Product
+          </Button>
+
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+            <Typography variant="h6">Bill Amount: ₹{billAmount.toFixed(2)}</Typography>
+            <Button type="submit" variant="contained" color="primary">
+              Add Invoice
+            </Button>
+          </Box>
         </form>
-      </div>
-      <ToastContainer/>
-    </section>
+      </Paper>
+      <ToastContainer />
+    </Box>
   );
 }
 
