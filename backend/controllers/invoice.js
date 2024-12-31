@@ -1,6 +1,7 @@
 const Invoice = require("../models/invoice");
 const Sale = require("../models/sale");
 const Product = require('../models/product')
+const Tax = require('../models/tax')
 const sequelize = require("../config/database");
 const jwt = require("jsonwebtoken");
 const addInvoice = async (req, res) => {
@@ -149,5 +150,59 @@ const deleteInvoice = async (req, res) => {
   }
 };
 
+const getInvoiceItemsById = async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(" ")[1];  // Get the token from the Authorization header
+    let userId;
 
-module.exports = {addInvoice,getInvoicesByUserId,deleteInvoice}
+    // Verify JWT token
+    jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
+      if (err) {
+        return res.status(401).json({ error: "Unauthorized" });
+      } else {
+        userId = decodedToken.id;  // Extract the userId from the decoded token
+      }
+    });
+
+    const { invoiceId } = req.params;  // Get the invoice number from URL params
+
+    // Fetch the invoice based on userId and invoiceNumber
+    const invoice = await Invoice.findOne({
+      where: { userId, invoiceNumber: invoiceId },
+      attributes: ['totalAmount', 'totalTax', 'customerName'], // Fetch only required fields
+    });
+    
+    
+
+    if (!invoice) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+    const sales = await Sale.findAll({
+      where: { userId, invoiceNumber: invoiceId },
+      attributes: ['quantity', 'price', 'discountPercentage', 'total', 'productId'], 
+      include: [
+        {
+          model: Product,
+          attributes: ['model', 'taxId'], 
+          include: [
+            {
+              model: Tax,
+              attributes: ['rate'],
+            },
+          ],
+        },
+      ],
+    });
+    console.log(sales)
+
+    res.status(200).json({ invoice, sales });
+  } catch (error) {
+    console.error("Error fetching invoice:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+
+module.exports = {addInvoice,getInvoicesByUserId,deleteInvoice, getInvoiceItemsById}
