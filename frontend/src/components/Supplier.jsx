@@ -248,6 +248,7 @@ const Supplier = () => {
             <Pagination
               count={Math.ceil(filterAndSortSuppliers().length / itemsPerPage)}
               page={currentPage}
+              color="primary"
               onChange={handlePageChange}
               sx={{ mt: 2, display: "flex", justifyContent: "center" }}
             />

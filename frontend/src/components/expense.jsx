@@ -325,6 +325,7 @@ const Expense = () => {
             <Pagination
               count={Math.ceil(filteredExpenses.length / itemsPerPage)}
               page={currentPage}
+              color="primary"
               onChange={handlePageChange}
               sx={{ mt: 2, display: "flex", justifyContent: "center" }}
             />

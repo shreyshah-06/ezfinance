@@ -307,6 +307,7 @@ const Sales = () => {
             <Pagination
               count={Math.ceil(filteredSales.length / itemsPerPage)}
               page={currentPage}
+              color="primary"
               onChange={(e, value) => setCurrentPage(value)}
               sx={{ mt: 2, display: "flex", justifyContent: "center" }}
             />

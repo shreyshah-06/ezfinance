@@ -269,6 +269,7 @@ const Audit = () => {
               count={Math.ceil(filteredAuditData.length / itemsPerPage)}
               page={currentPage}
               onChange={handlePageChange}
+              color="primary"
               sx={{ mt: 2, display: "flex", justifyContent: "center" }}
             />
           </Paper>
