@@ -1,75 +1,103 @@
-import React, { useState } from 'react';
-import '../CSS/addtaxslab.css';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  Grid,
+  Box,
+} from "@mui/material";
 
 const AddExpense = ({ isOpen, onClose, onAdd }) => {
   const [expenseData, setExpenseData] = useState({
-    vendorName: '',
-    date: '',
-    totalAmount: '',
-    expenseName: ''
+    vendorName: "",
+    date: "",
+    totalAmount: "",
+    expenseName: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setExpenseData(prevState => ({
+    setExpenseData((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleAddExpense = () => {
     onAdd(expenseData);
     setExpenseData({
-        vendorName: '',
-        date: '',
-        totalAmount: '',
-        expenseName: ''
+      vendorName: "",
+      date: "",
+      totalAmount: "",
+      expenseName: "",
     });
     onClose();
   };
 
   return (
-    <>
-      {isOpen &&
-        <div className="modal-overlay">
-            <div className='fw-bold' style={{ fontWeight: "bold", fontSize: '1.5rem', padding: '0.5rem', marginBottom: '1.2rem' }}>Add New Expense</div>
-            <div>
-                <input
-                  type="text"
-                  name="vendorName"
-                  placeholder="Vendor Name"
-                  value={expenseData.vendorName}
-                  onChange={handleChange}
-                />
-                <input
-                  type="date"
-                  name="date"
-                  placeholder="Date"
-                  value={expenseData.date}
-                  onChange={handleChange}
-                />
-                <input
-                  type="number"
-                  name="totalAmount"
-                  placeholder="Total Amount"
-                  value={expenseData.totalAmount}
-                  onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="expenseName"
-                  placeholder="Expense Name"
-                  value={expenseData.expenseName}
-                  onChange={handleChange}
-                />
-                <div className="button-container">
-                    <button className="cancel-button" onClick={onClose}>Cancel</button>
-                    <button className="add-button" onClick={handleAddExpense}>Add</button>
-                </div>
-            </div>
-        </div>
-      }
-    </>
+    <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>Add New Expense</DialogTitle>
+      <DialogContent>
+        <Box sx={{ mt: 2 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Vendor Name"
+                name="vendorName"
+                value={expenseData.vendorName}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                type="date"
+                label="Date"
+                name="date"
+                value={expenseData.date}
+                onChange={handleChange}
+                InputLabelProps={{ shrink: true }}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Total Amount"
+                name="totalAmount"
+                value={expenseData.totalAmount}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Expense Name"
+                name="expenseName"
+                value={expenseData.expenseName}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary" variant="outlined">
+          Cancel
+        </Button>
+        <Button onClick={handleAddExpense} color="primary" variant="contained">
+          Add
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

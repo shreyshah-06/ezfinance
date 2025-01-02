@@ -15,8 +15,9 @@ import {
   TextField,
   MenuItem,
   Select,
+  Pagination,
 } from "@mui/material";
-import { Add, Delete, AttachMoney } from "@mui/icons-material";
+import { Add, Delete, AttachMoney, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import { styled } from "@mui/system";
 import Navbar from "./Navbar";
 import SideBar from "./sidebar";
@@ -42,7 +43,6 @@ const DataContainer = styled(Paper)(({ theme }) => ({
 const TotalAmountBox = styled(Box)(({ theme }) => ({
   display: "flex",
   padding: theme.spacing(2),
-  display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   borderRadius: "12px",
@@ -70,19 +70,23 @@ const IconWrapper = styled(Box)(({ theme }) => ({
 
 const Expense = () => {
   const [expenses, setExpenses] = useState([]);
-  const [showAddExpense, setShowAddExpense] = useState(false);
-  const [specificDate, setSpecificDate] = useState("");
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
   const [searchText, setSearchText] = useState("");
-  const [sortOption, setSortOption] = useState("date");
+  const [specificDate, setSpecificDate] = useState("");
+  const [sortOption, setSortOption] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [showAddExpense, setShowAddExpense] = useState(false);
 
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
         const response = await axiosInstance.post("/expense/getall", {});
         setExpenses(response.data.expenses);
+        setFilteredExpenses(response.data.expenses); // Initialize filteredExpenses
       } catch (error) {
         console.error("Error fetching expenses:", error);
-        toast.error("Failed to fetch expenses.");
       }
     };
     fetchExpenses();
@@ -90,7 +94,13 @@ const Expense = () => {
 
   const handleDeleteExpense = async (expenseId) => {
     try {
-      await axiosInstance.post("/expense/delete", { id: expenseId });
+      const token = localStorage.getItem('token');
+      console.log(expenseId)
+      await axiosInstance.delete(`/expense/delete/${expenseId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setExpenses((prev) => prev.filter((expense) => expense.id !== expenseId));
       toast.success("Expense deleted successfully!");
     } catch (error) {
@@ -98,6 +108,7 @@ const Expense = () => {
       toast.error("Failed to delete expense.");
     }
   };
+  
 
   const handleAddExpense = async (expense) => {
     try {
@@ -112,24 +123,51 @@ const Expense = () => {
     }
   };
 
-  const filteredExpenses = expenses
-    .filter(
-      (expense) =>
+  const filterAndSortExpenses = () => {
+    let filtered = expenses.filter((expense) => {
+      const matchesSearch =
         expense.vendorName.toLowerCase().includes(searchText.toLowerCase()) ||
-        expense.expenseName.toLowerCase().includes(searchText.toLowerCase())
-    )
-    .filter((expense) =>
-      specificDate ? expense.date.split("T")[0] === specificDate : true
-    )
-    .sort((a, b) => {
-      if (sortOption === "amount") {
-        return b.totalAmount - a.totalAmount;
-      } else if (sortOption === "date") {
-        return new Date(b.date) - new Date(a.date);
-      }
-      return 0;
+        expense.expenseName.toLowerCase().includes(searchText.toLowerCase());
+
+      return matchesSearch;
     });
 
+    if (sortOption) {
+      filtered.sort((a, b) => {
+        let valueA = a[sortOption];
+        let valueB = b[sortOption];
+
+        if (sortOption === "date") {
+          valueA = new Date(valueA);
+          valueB = new Date(valueB);
+        } else if (sortOption === "totalAmount") {
+          valueA = parseFloat(valueA);
+          valueB = parseFloat(valueB);
+        }
+
+        if (sortOrder === "asc") return valueA > valueB ? 1 : -1;
+        if (sortOrder === "desc") return valueA < valueB ? 1 : -1;
+        return 0;
+      });
+    }
+
+    setFilteredExpenses(filtered);
+  };
+
+  useEffect(() => {
+    filterAndSortExpenses();
+  }, [searchText, sortOption, sortOrder, expenses]);
+
+  const paginatedExpenses = filteredExpenses.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (event, value) => setCurrentPage(value);
+  const toggleSortOrder = () => {
+    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+  };
+  
   const totalAmount = filteredExpenses.reduce(
     (sum, expense) => sum + parseFloat(expense.totalAmount),
     0
@@ -143,14 +181,14 @@ const Expense = () => {
           <SideBar />
         </Box>
         <Box sx={{ flexGrow: 1, p: 4 }}>
+          {/* Filters Section */}
           <Grid container spacing={3} sx={{ mb: 3 }}>
-            {/* Filters Section */}
             <Grid item xs={12} sm={8} md={9}>
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
-                  gap: 2,
+                  gap: 1,
                   alignItems: "center",
                   backgroundColor: "#f5f5f5",
                   padding: "16px",
@@ -170,19 +208,22 @@ const Expense = () => {
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
                   displayEmpty
-                  sx={{ flex: 1, backgroundColor: "#e9efeb" }}
+                  sx={{backgroundColor: "#e9efeb" }}
                 >
                   <MenuItem value="">Sort By</MenuItem>
-                  <MenuItem value="amount">Total Expense</MenuItem>
+                  <MenuItem value="totalAmount">Total Expense</MenuItem>
                   <MenuItem value="date">Date</MenuItem>
                 </Select>
+                <IconButton onClick={toggleSortOrder}>
+                  {sortOrder === "asc" ? <ArrowUpward /> : <ArrowDownward />}
+                </IconButton>
 
                 <TextField
                   type="date"
                   label="Select Date"
                   value={specificDate}
                   onChange={(e) => setSpecificDate(e.target.value)}
-                  sx={{ width: "25%", backgroundColor: "#fff" }}
+                  sx={{ width: "21%", backgroundColor: "#fff" }}
                   InputLabelProps={{ shrink: true }}
                 />
                 <Button
@@ -194,8 +235,6 @@ const Expense = () => {
                 </Button>
               </Box>
             </Grid>
-
-            {/* Total Expense Section */}
             <Grid item xs={12} sm={4} md={3}>
               <TotalAmountBox>
                 <IconWrapper>
@@ -253,7 +292,7 @@ const Expense = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredExpenses.map((expense, index) => (
+                  {paginatedExpenses.map((expense, index) => (
                     <TableRow key={index}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{expense.vendorName}</TableCell>
@@ -286,6 +325,12 @@ const Expense = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+            <Pagination
+              count={Math.ceil(filteredExpenses.length / itemsPerPage)}
+              page={currentPage}
+              onChange={handlePageChange}
+              sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+            />
           </DataContainer>
         </Box>
       </GradientBackground>
