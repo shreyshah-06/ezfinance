@@ -30,8 +30,8 @@ const GradientBackground = styled(Box)(() => ({
 }));
 
 const TotalAmountBox = styled(Box)(({ theme }) => ({
-  display: "flex",
   padding: theme.spacing(2),
+  display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   borderRadius: "12px",
@@ -83,12 +83,12 @@ const Audit = () => {
 
   const filterAndSortAudit = () => {
     let filtered = auditData.filter((audit) => {
-        if (sortOption === "Invoice") {
-          return audit.type === "Invoice";
-        } else if (sortOption === "Expense") {
-          return audit.type === "Expense";
-        }
-        return true;
+      if (sortOption === "Invoice") {
+        return audit.type === "Invoice";
+      } else if (sortOption === "Expense") {
+        return audit.type === "Expense";
+      }
+      return true;
     });
 
     if (sortOption) {
@@ -154,17 +154,22 @@ const Audit = () => {
                   label="Sort By"
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
-                  sx={{ backgroundColor: "#f5f5f5" }}
+                  sx={{
+                    backgroundColor: "#e9efeb",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#030403",
+                    },
+                  }}
                 >
                   <MenuItem value="">Sort By</MenuItem>
                   <MenuItem value="Invoice">Invoice</MenuItem>
-                <MenuItem value="Expense">Expense</MenuItem>
+                  <MenuItem value="Expense">Expense</MenuItem>
                   <MenuItem value="date">Date</MenuItem>
                   <MenuItem value="amount">Amount</MenuItem>
                 </TextField>
-                <IconButton onClick={toggleSortOrder}>
+                <Box sx={{ cursor: "pointer" }} onClick={toggleSortOrder}>
                   {sortOrder === "asc" ? <ArrowUpward /> : <ArrowDownward />}
-                </IconButton>
+                </Box>
               </Box>
             </Grid>
             <Grid item xs={12} sm={4} md={4}>
@@ -184,7 +189,7 @@ const Audit = () => {
                 </Typography>
               </TotalAmountBox>
             </Grid>
-             <Grid item xs={12} sm={4} md={4}>
+            <Grid item xs={12} sm={4} md={4}>
               <TotalAmountBox>
                 <IconWrapper>
                   <Typography sx={{ fontSize: "20px" }}>₹</Typography>
@@ -209,6 +214,9 @@ const Audit = () => {
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+              Logs
+            </Typography>
             <TableContainer>
               <Table>
                 <TableHead>
@@ -229,13 +237,13 @@ const Audit = () => {
                 </TableHead>
                 <TableBody>
                   {paginatedAuditData.map((audit, index) => (
-                    <TableRow key={index}>
+                    <TableRow key={index} hover>
                       <TableCell>
                         {(currentPage - 1) * itemsPerPage + index + 1}
                       </TableCell>
                       <TableCell>{audit.type}</TableCell>
                       <TableCell>
-                        {new Date(audit.createdAt).toLocaleDateString()}
+                        {new Date(audit.createdAt).toLocaleDateString("en-GB")}
                       </TableCell>
                       <TableCell
                         style={{

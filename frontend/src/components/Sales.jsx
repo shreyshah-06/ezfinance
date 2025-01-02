@@ -38,8 +38,8 @@ const DataContainer = styled(Paper)(({ theme }) => ({
 }));
 
 const TotalAmountBox = styled(Box)(({ theme }) => ({
-  display: "flex",
   padding: theme.spacing(2),
+  display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   borderRadius: "12px",
@@ -47,6 +47,11 @@ const TotalAmountBox = styled(Box)(({ theme }) => ({
   height: "80px",
   width: "100%",
   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+  transition: "transform 0.2s, box-shadow 0.2s",
+  "&:hover": {
+    transform: "scale(1.02)",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+  },
 }));
 
 const IconWrapper = styled(Box)(({ theme }) => ({
@@ -88,21 +93,21 @@ const Sales = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-        try {
-          const token = localStorage.getItem('token');
-          const response = await axiosInstance.post("/product/getAll", {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            });
-          setProducts(response.data.products);
-        } catch (error) {
-          console.error("Error fetching products:", error);
-          toast.error("Failed to fetch product data.");
-        }
-      };
-        fetchProducts();
-  },[]);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axiosInstance.post("/product/getAll", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setProducts(response.data.products);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        toast.error("Failed to fetch product data.");
+      }
+    };
+    fetchProducts();
+  }, []);
   useEffect(() => {
     const productMap = new Map(
       products.map((product) => [product.id, product.model])
@@ -120,8 +125,10 @@ const Sales = () => {
     }
 
     if (productFilter) {
-        filtered = filtered.filter((sale) => sale.productId === parseInt(productFilter, 10));
-      }
+      filtered = filtered.filter(
+        (sale) => sale.productId === parseInt(productFilter, 10)
+      );
+    }
     if (sortOption) {
       filtered = [...filtered].sort((a, b) => {
         let valueA = a[sortOption];
@@ -132,8 +139,8 @@ const Sales = () => {
           valueB = new Date(valueB);
         }
         if (sortOption === "productId") {
-          valueA =  productMap.get(a.productId);
-          valueB =  productMap.get(b.productId);
+          valueA = productMap.get(a.productId);
+          valueB = productMap.get(b.productId);
         }
 
         if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
@@ -184,13 +191,24 @@ const Sales = () => {
                   label="Search Sales"
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
-                  sx={{ flex: 2, backgroundColor: "#e9efeb" }}
+                  sx={{
+                    flex: 2,
+                    backgroundColor: "#e9efeb",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#030403",
+                    },
+                  }}
                 />
                 <Select
                   value={productFilter}
                   onChange={(e) => setProductFilter(e.target.value)}
                   displayEmpty
-                  sx={{ backgroundColor: "#e9efeb" }}
+                  sx={{
+                    backgroundColor: "#e9efeb",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#030403",
+                    },
+                  }}
                 >
                   <MenuItem value="">Filter by Product</MenuItem>
                   {products.map((product) => (
@@ -202,7 +220,12 @@ const Sales = () => {
                 <Select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
-                  sx={{ backgroundColor: "#e9efeb" }}
+                  sx={{
+                    backgroundColor: "#e9efeb",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#030403",
+                    },
+                  }}
                 >
                   <MenuItem value="kmp">Sort By</MenuItem>
                   <MenuItem value="total">Total Amount</MenuItem>
@@ -240,6 +263,9 @@ const Sales = () => {
           </Grid>
 
           <DataContainer>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
+              Sales
+            </Typography>
             <TableContainer>
               <Table>
                 <TableHead>

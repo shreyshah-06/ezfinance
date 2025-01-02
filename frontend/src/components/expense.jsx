@@ -41,8 +41,8 @@ const DataContainer = styled(Paper)(({ theme }) => ({
 }));
 
 const TotalAmountBox = styled(Box)(({ theme }) => ({
-  display: "flex",
   padding: theme.spacing(2),
+  display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   borderRadius: "12px",
@@ -213,9 +213,9 @@ const Expense = () => {
                   <MenuItem value="totalAmount">Total Expense</MenuItem>
                   <MenuItem value="date">Date</MenuItem>
                 </Select>
-                <IconButton onClick={toggleSortOrder}>
+                <Box sx={{ cursor: "pointer" }}onClick={toggleSortOrder}>
                   {sortOrder === "asc" ? <ArrowUpward /> : <ArrowDownward />}
-                </IconButton>
+                </Box>
 
                 <TextField
                   type="date"
@@ -290,8 +290,8 @@ const Expense = () => {
                 </TableHead>
                 <TableBody>
                   {paginatedExpenses.map((expense, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{index + 1}</TableCell>
+                    <TableRow key={index} hover>
+                      <TableCell> {(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
                       <TableCell>{expense.vendorName}</TableCell>
                       <TableCell>{expense.expenseName}</TableCell>
                       <TableCell>

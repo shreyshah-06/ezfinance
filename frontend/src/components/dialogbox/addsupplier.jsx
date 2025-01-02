@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import '../CSS/addsupplier.css';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  Box,
+  Typography,
+} from '@mui/material';
 
 const AddSupplier = ({ isOpen, onClose, onAdd }) => {
   const [supplierData, setSupplierData] = useState({
@@ -7,14 +16,14 @@ const AddSupplier = ({ isOpen, onClose, onAdd }) => {
     contact: '',
     address: '',
     details: '',
-    previousCreditBalance: ''
+    previousCreditBalance: '',
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSupplierData(prevData => ({
+    setSupplierData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -25,59 +34,88 @@ const AddSupplier = ({ isOpen, onClose, onAdd }) => {
       contact: '',
       address: '',
       details: '',
-      previousCreditBalance: ''
+      previousCreditBalance: '',
     });
+    onClose();
   };
 
   return (
-    <>
-      {isOpen &&
-        <div className="modal-overlay">
-            <div className='fw-bold' style={{ fontWeight: "bold", fontSize: '1.5rem', padding: '0.5rem', marginBottom: '1.2rem' }}>Add New Supplier</div>
-            <div>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  value={supplierData.name}
-                  onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="contact"
-                  placeholder="Contact"
-                  value={supplierData.contact}
-                  onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Address"
-                  value={supplierData.address}
-                  onChange={handleChange}
-                />
-                <input
-                  type="text"
-                  name="details"
-                  placeholder="Details"
-                  value={supplierData.details}
-                  onChange={handleChange}
-                />
-                <input
-                  type="number"
-                  name="previousCreditBalance"
-                  placeholder="Previous Credit Balance"
-                  value={supplierData.previousCreditBalance}
-                  onChange={handleChange}
-                />
-                <div className="button-container">
-                    <button className="cancel-button" onClick={onClose}>Cancel</button>
-                    <button className="add-button" onClick={handleAddSupplier}>Add</button>
-                </div>
-            </div>
-        </div>
-      }
-    </>
+    <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>
+        <Typography variant="h6" fontWeight="bold">
+          Add New Supplier
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <Box
+          component="form"
+          display="flex"
+          flexDirection="column"
+          gap={2}
+          sx={{ mt: 1 }}
+        >
+          <TextField
+            label="Name"
+            name="name"
+            value={supplierData.name}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+          />
+          <TextField
+            label="Contact"
+            name="contact"
+            value={supplierData.contact}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+          />
+          <TextField
+            label="Address"
+            name="address"
+            value={supplierData.address}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+          />
+          <TextField
+            label="Details"
+            name="details"
+            value={supplierData.details}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+          />
+          <TextField
+            label="Previous Credit Balance"
+            name="previousCreditBalance"
+            type="number"
+            value={supplierData.previousCreditBalance}
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          color="secondary"
+          sx={{ textTransform: 'none' }}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={handleAddSupplier}
+          variant="contained"
+          color="primary"
+          sx={{ textTransform: 'none' }}
+        >
+          Add
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
