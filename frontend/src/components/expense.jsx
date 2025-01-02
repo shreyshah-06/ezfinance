@@ -17,7 +17,7 @@ import {
   Select,
   Pagination,
 } from "@mui/material";
-import { Add, Delete, AttachMoney, ArrowUpward, ArrowDownward } from "@mui/icons-material";
+import { Add, Delete, ArrowUpward, ArrowDownward } from "@mui/icons-material";
 import { styled } from "@mui/system";
 import Navbar from "./Navbar";
 import SideBar from "./sidebar";
