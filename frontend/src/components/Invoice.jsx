@@ -219,9 +219,7 @@ const Invoice = () => {
             {/* Top Row: Invoice Amount and Tax Due */}
             <Grid item xs={12} sm={6} md={4}>
               <InfoBox>
-                <IconWrapper>
-                  <AttachMoney fontSize="medium" />
-                </IconWrapper>
+                <IconWrapper><Typography sx={{ fontSize: '20px' }}>₹</Typography></IconWrapper>
                 <Box>
                   <Typography variant="subtitle2" color="textSecondary">
                     Invoice Amount

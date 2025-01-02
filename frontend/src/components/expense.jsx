@@ -95,7 +95,6 @@ const Expense = () => {
   const handleDeleteExpense = async (expenseId) => {
     try {
       const token = localStorage.getItem('token');
-      console.log(expenseId)
       await axiosInstance.delete(`/expense/delete/${expenseId}`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -237,9 +236,7 @@ const Expense = () => {
             </Grid>
             <Grid item xs={12} sm={4} md={3}>
               <TotalAmountBox>
-                <IconWrapper>
-                  <AttachMoney fontSize="medium" />
-                </IconWrapper>
+                <IconWrapper><Typography sx={{ fontSize: '20px' }}>₹</Typography></IconWrapper>
                 <Box>
                   <Typography variant="subtitle2" color="textSecondary">
                     Expenses
@@ -247,7 +244,7 @@ const Expense = () => {
                   <Typography
                     variant="h6"
                     sx={{
-                      color: "#4CAF50",
+                      color: "#FF6F61",
                       fontWeight: "bold",
                     }}
                   >
