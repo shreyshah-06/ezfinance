@@ -1,7 +1,6 @@
-// models/Invoice.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
-const User = require("./user"); // Import the User model
+const User = require("./user");
 
 const Expense = sequelize.define("Expense", {
   id: {
