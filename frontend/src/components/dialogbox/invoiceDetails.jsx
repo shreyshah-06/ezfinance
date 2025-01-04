@@ -31,12 +31,7 @@ const InvoiceDetails = ({ open, onClose, invoice }) => {
       const fetchProducts = async () => {
         setLoading(true);
         try {
-          const token = localStorage.getItem("token");
-          const response = await axiosInstance.get(`/invoice/${invoice.invoiceNumber}/items`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const response = await axiosInstance.get(`/invoice/${invoice.invoiceNumber}/items`);
           setProducts(response.data.sales);
         } catch (error) {
           console.error("Error fetching products:", error);

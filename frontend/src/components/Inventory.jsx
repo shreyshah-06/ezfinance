@@ -73,12 +73,16 @@ const Inventory = () => {
     purchasePrice: "",
     quantity: "",
   });
-  const [toast, setToast] = useState({ open: false, message: "", severity: "success" });
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await axiosInstance.post("/product/getAll", {});
+        const response = await axiosInstance.get("/product/getAll", {});
         setInventory(response.data.products);
         setFilteredInventory(response.data.products);
       } catch (error) {
@@ -143,10 +147,18 @@ const Inventory = () => {
       setInventory(inventory.filter((item) => item.id !== itemToDelete.id));
       setOpenDialog(false);
       setItemToDelete(null);
-      setToast({ open: true, message: "Item deleted successfully", severity: "success" });
+      setToast({
+        open: true,
+        message: "Item deleted successfully",
+        severity: "success",
+      });
     } catch (error) {
       console.error("Error deleting item:", error);
-      setToast({ open: true, message: "Error deleting item", severity: "error" });
+      setToast({
+        open: true,
+        message: "Error deleting item",
+        severity: "error",
+      });
     }
   };
 
@@ -207,20 +219,21 @@ const Inventory = () => {
 
   const handleAddProductSubmit = async () => {
     try {
-      const token = localStorage.getItem("token");
-      await axiosInstance.post("/api/product/add", newProduct,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          }
-        }
-      );
+      await axiosInstance.post("/api/product/add", newProduct);
       setInventory([...inventory, newProduct]);
       setOpenAddDialog(false);
-      setToast({ open: true, message: "Product added successfully", severity: "success" });
+      setToast({
+        open: true,
+        message: "Product added successfully",
+        severity: "success",
+      });
     } catch (error) {
       console.error("Error adding product:", error);
-      setToast({ open: true, message: "Error adding product", severity: "error" });
+      setToast({
+        open: true,
+        message: "Error adding product",
+        severity: "error",
+      });
     }
   };
 
@@ -432,75 +445,77 @@ const Inventory = () => {
             value={newProduct.model}
             onChange={handleInputChange}
           />
-          <TextField          margin="dense"
-          label="Category ID"
-          type="text"
-          fullWidth
-          name="categoryId"
-          value={newProduct.categoryId}
-          onChange={handleInputChange}
-        />
-        <TextField
-          margin="dense"
-          label="Selling Price"
-          type="number"
-          fullWidth
-          name="sellingPrice"
-          value={newProduct.sellingPrice}
-          onChange={handleInputChange}
-        />
-        <TextField
-          margin="dense"
-          label="Tax ID"
-          type="text"
-          fullWidth
-          name="taxId"
-          value={newProduct.taxId}
-          onChange={handleInputChange}
-        />
-        <TextField
-          margin="dense"
-          label="Supplier ID"
-          type="text"
-          fullWidth
-          name="supplierId"
-          value={newProduct.supplierId}
-          onChange={handleInputChange}
-        />
-        <TextField
-          margin="dense"
-          label="Purchase Price"
-          type="number"
-          fullWidth
-          name="purchasePrice"
-          value={newProduct.purchasePrice}
-          onChange={handleInputChange}
-        />
-        <TextField
-          margin="dense"
-          label="Quantity"
-          type="number"
-          fullWidth
-          name="quantity"
-          value={newProduct.quantity}
-          onChange={handleInputChange}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleAddProductClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleAddProductSubmit} color="success">
-          Add Product
-        </Button>
-      </DialogActions>
-    </Dialog>
-    {/* Delete Confirmation Dialog */}
-    <Dialog open={openDialog} onClose={cancelDelete}>
+          <TextField
+            margin="dense"
+            label="Category ID"
+            type="text"
+            fullWidth
+            name="categoryId"
+            value={newProduct.categoryId}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Selling Price"
+            type="number"
+            fullWidth
+            name="sellingPrice"
+            value={newProduct.sellingPrice}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Tax ID"
+            type="text"
+            fullWidth
+            name="taxId"
+            value={newProduct.taxId}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Supplier ID"
+            type="text"
+            fullWidth
+            name="supplierId"
+            value={newProduct.supplierId}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Purchase Price"
+            type="number"
+            fullWidth
+            name="purchasePrice"
+            value={newProduct.purchasePrice}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            label="Quantity"
+            type="number"
+            fullWidth
+            name="quantity"
+            value={newProduct.quantity}
+            onChange={handleInputChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleAddProductClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleAddProductSubmit} color="success">
+            Add Product
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={openDialog} onClose={cancelDelete}>
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this product? This action cannot be undone.
+            Are you sure you want to delete this product? This action cannot be
+            undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -542,4 +557,3 @@ const Inventory = () => {
 };
 
 export default Inventory;
-

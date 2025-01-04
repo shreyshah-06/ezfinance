@@ -3,20 +3,9 @@ const Sale = require("../models/sale");
 const Product = require('../models/product')
 const Tax = require('../models/tax')
 const sequelize = require("../config/database");
-const jwt = require("jsonwebtoken");
 const addInvoice = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1];
-      console.log(token);
-      let userId;
-      jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
-        if (err) {
-          return res.status(401).json({ error: "Unauthorized" });
-        } else {
-          userId = decodedToken.id; 
-          console.log(userId); 
-        }
-      });
+    const userId = req.user.id;
     const {customerName, date, products } = req.body;
     const lastInvoice = await Invoice.findOne({
       where: { userId },
@@ -90,18 +79,8 @@ const addInvoice = async (req, res) => {
 
 const getInvoicesByUserId = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1];
-      console.log(token);
-      let userId;
-      jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
-        if (err) {
-          return res.status(401).json({ error: "Unauthorized" });
-        } else {
-          userId = decodedToken.id; 
-          console.log(userId); 
-        }
-      });
-      let sortOption;
+    const userId = req.user.id;
+    let sortOption;
     const { sortBy, sortOrder } = req.query;
     if (sortBy && sortOrder) {
       sortOption = [[sortBy, sortOrder === 'asc' ? 'ASC' : 'DESC']];
@@ -117,23 +96,12 @@ const getInvoicesByUserId = async (req, res) => {
 
 const deleteInvoice = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1];
-      console.log(token);
-      let userId;
-      jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
-        if (err) {
-          return res.status(401).json({ error: "Unauthorized" });
-        } else {
-          userId = decodedToken.id; 
-          console.log(userId); 
-        }
-      });
-    const {id} = req.body
-    console.log(id)
+    const userId = req.user.id;
+    const { invoiceId } = req.params;
     const deletedInvoice = await Invoice.destroy({
       where: {
         userId,
-        id
+        id : invoiceId
       }
     });
 
@@ -152,17 +120,7 @@ const deleteInvoice = async (req, res) => {
 
 const getInvoiceItemsById = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];  // Get the token from the Authorization header
-    let userId;
-
-    // Verify JWT token
-    jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
-      if (err) {
-        return res.status(401).json({ error: "Unauthorized" });
-      } else {
-        userId = decodedToken.id;  // Extract the userId from the decoded token
-      }
-    });
+    const userId = req.user.id;
 
     const { invoiceId } = req.params;  // Get the invoice number from URL params
 

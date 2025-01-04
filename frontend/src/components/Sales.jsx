@@ -94,12 +94,7 @@ const Sales = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await axiosInstance.post("/product/getAll", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axiosInstance.get("/product/getAll");
         setProducts(response.data.products);
       } catch (error) {
         console.error("Error fetching products:", error);

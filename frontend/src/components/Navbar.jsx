@@ -82,18 +82,12 @@ const Navbar = () => {
     }
 
     try {
-      const token = localStorage.getItem("token");
       const response = await axiosInstance.patch(
         "/changepassword",
         {
           currentPassword: passwords.oldPassword,
           newPassword: passwords.newPassword,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
       );
 
       if (response.status === 200) {

@@ -94,12 +94,7 @@ const Expense = () => {
 
   const handleDeleteExpense = async (expenseId) => {
     try {
-      const token = localStorage.getItem('token');
-      await axiosInstance.delete(`/expense/delete/${expenseId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      await axiosInstance.delete(`/expense/delete/${expenseId}`);
       setExpenses((prev) => prev.filter((expense) => expense.id !== expenseId));
       toast.success("Expense deleted successfully!");
     } catch (error) {

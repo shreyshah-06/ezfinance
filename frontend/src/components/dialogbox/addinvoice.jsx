@@ -41,7 +41,7 @@ function AddInvoice() {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await axiosInstance.post("/product/getAll", {});
+        const response = await axiosInstance.get("/product/getAll", {});
         setInventory(response.data.products);
       } catch (error) {
         console.error("Error fetching inventory:", error);
@@ -49,7 +49,7 @@ function AddInvoice() {
     };
     const fetchTaxSlabs = async () => {
       try {
-        const response = await axiosInstance.post("/tax/getall", {});
+        const response = await axiosInstance.get("/tax/getall", {});
         setTaxRates(response.data.taxSlabs);
       } catch (error) {
         console.error("Error fetching tax slabs:", error);

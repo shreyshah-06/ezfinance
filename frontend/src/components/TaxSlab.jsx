@@ -44,7 +44,7 @@ const TaxSlab = () => {
   useEffect(() => {
     const fetchTaxSlabs = async () => {
       try {
-        const response = await axiosInstance.post("/tax/getall", {});
+        const response = await axiosInstance.get("/tax/getall", {});
         setTaxSlabs(response.data.taxSlabs);
       } catch (error) {
         console.error("Error fetching tax slabs:", error);
@@ -55,12 +55,14 @@ const TaxSlab = () => {
 
   const handleDelete = async (taxSlabId) => {
     try {
-      await axiosInstance.post("/tax/delete", { id: taxSlabId });
+      const response = await axiosInstance.delete(`/tax/delete/${taxSlabId}`);
       setTaxSlabs((prev) => prev.filter((slab) => slab.id !== taxSlabId));
-      toast.success("Tax Slab Deleted Successfully", {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      if (response.status === 200) {
+        toast.success("Tax Slab Deleted Successfully", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+      }
     } catch (error) {
       console.error("Error deleting tax slab:", error);
       toast.error("Failed to delete Tax Slab.");
@@ -76,7 +78,7 @@ const TaxSlab = () => {
   const handleAddTaxSlab = async (taxSlab) => {
     try {
       await axiosInstance.post("/tax/add", taxSlab);
-      const response = await axiosInstance.post("/tax/getall", {});
+      const response = await axiosInstance.get("/tax/getall", {});
       setTaxSlabs(response.data.taxSlabs);
       setShowAddTaxSlab(false);
       toast.success("Tax Slab Added Successfully", {

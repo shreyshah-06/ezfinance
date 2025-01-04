@@ -96,7 +96,7 @@ const Invoice = () => {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const response = await axiosInstance.post("/invoice/getall", {});
+        const response = await axiosInstance.get("/invoice/getall");
         setInvoices(response.data.invoices);
         setFilteredInvoice(response.data.invoices);
         setTotalInvoiceAmt(response.data.totalInvoiceAmt);
@@ -117,7 +117,7 @@ const Invoice = () => {
 
   const handleDeleteInvoice = async (invoiceId) => {
     try {
-      await axiosInstance.post("/invoice/delete", { id: invoiceId });
+      await axiosInstance.delete(`/invoice/delete/${invoiceId}`);
       setInvoices((prev) => prev.filter((invoice) => invoice.id !== invoiceId));
       toast.success("Invoice Deleted Successfully", {
         position: "top-right",
