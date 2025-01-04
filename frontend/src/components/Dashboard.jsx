@@ -18,7 +18,7 @@ import Chart from "react-apexcharts";
 export default function Dashboard() {
   // dummy data for representation
   const [dashboardData, setDashboardData] = useState({
-    totalRevenue: 50000,
+    totalRevenue: 500000,
     totalExpenses: 200000,
     totalTaxes: 50000,
     totalInventoryValue: 800000,
