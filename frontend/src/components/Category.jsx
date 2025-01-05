@@ -42,7 +42,7 @@ const Category = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axiosInstance.post("/category/getall", {});
+        const response = await axiosInstance.get("/category/getall");
         setCategories(response.data.categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -53,8 +53,8 @@ const Category = () => {
 
   const handleDelete = async (categoryId) => {
     try {
-      await axiosInstance.post("/category/delete", { id: categoryId });
-      const response = await axiosInstance.post("/category/getall", {});
+      await axiosInstance.delete(`/category/delete/${categoryId}`);
+      const response = await axiosInstance.get("/category/getall");
       setCategories(response.data.categories);
       toast.success("Category Deleted Successfully", { autoClose: 2000 });
     } catch (error) {
@@ -65,7 +65,7 @@ const Category = () => {
   const handleAddCategory = async (categoryName) => {
     try {
       await axiosInstance.post("/category/add", { name: categoryName });
-      const response = await axiosInstance.post("/category/getall", {});
+      const response = await axiosInstance.get("/category/getall");
       setCategories(response.data.categories);
       setShowAddCategory(false);
       toast.success("Category Added Successfully", { autoClose: 2000 });

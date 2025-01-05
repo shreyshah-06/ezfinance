@@ -69,7 +69,7 @@ const Audit = () => {
   useEffect(() => {
     const fetchAuditData = async () => {
       try {
-        const response = await axiosInstance.post("/audit/getall", {});
+        const response = await axiosInstance.get("/audit/getall", {});
         setAuditData(response.data.auditData);
         setFilteredAuditData(response.data.auditData);
         setTotalExpenses(response.data.totalExpenses);

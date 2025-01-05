@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {getAuditDataByUserId} = require('../controllers/audit')
+const {authMiddleware} = require('../middleware/authValidators')
 
-// router.route('/expense/add').post(addExpense)
-router.route('/audit/getall').post(getAuditDataByUserId)
+router.route('/audit/getall').get(authMiddleware, getAuditDataByUserId)
 module.exports = router

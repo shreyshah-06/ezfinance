@@ -1,25 +1,13 @@
-const Invoice = require('../models/invoice')
-const Expense = require('../models/expense')
+const Invoice = require('../models/invoice');
+const Expense = require('../models/expense');
 const { Op } = require('sequelize');
-const jwt = require("jsonwebtoken");
+
 const getAuditDataByUserId = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        console.log(token);
-        let userId;
-        jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
-        if (err) {
-            return res.status(401).json({ error: "Unauthorized" });
-        } else {
-            userId = decodedToken.id; 
-            console.log(userId); 
-        }
-        });
+        const userId = req.user.id;
         const { fromDate, toDate } = req.query;
-        // const fromDate1 = new Date(fromDate);
-        // fromDate1.setUTCHours(0, 0, 0, 0);
-        // const fromDateIST = new Date(fromDate1.valueOf() + 5.5 * 60 * 60 * 1000);
-        // console.log(fromDateIST)
+
+        // date filter
         const dateFilter = {};
         if (fromDate && toDate) {
             dateFilter.createdAt = {
@@ -35,52 +23,44 @@ const getAuditDataByUserId = async (req, res) => {
             };
         }
 
-        const invoices = await Invoice.findAll({
-            where: { userId,
-                ...dateFilter },
-            attributes: ['createdAt', 'invoiceNumber', 'totalAmount'],
-            raw: true
-        });
+        const [invoices, expenses] = await Promise.all([
+            Invoice.findAll({
+                where: { userId, ...dateFilter },
+                attributes: ['createdAt', 'invoiceNumber', 'totalAmount'],
+                raw: true,
+                order: [['createdAt', 'DESC']]
+            }),
+            Expense.findAll({
+                where: { userId, ...dateFilter },
+                attributes: ['createdAt', 'expenseId', 'totalAmount'],
+                raw: true,
+                order: [['createdAt', 'DESC']]
+            })
+        ]);
 
-        const expenses = await Expense.findAll({
-            where: { userId,
-                ...dateFilter },
-            attributes: ['createdAt', 'expenseId', 'totalAmount'],
-            raw: true
-        });
+        const totalInvoices = invoices.reduce((acc, invoice) => acc + invoice.totalAmount, 0);
+        const totalExpenses = expenses.reduce((acc, expense) => acc + expense.totalAmount, 0);
 
-        let totalExpenses = 0;
-        let totalInvoices = 0;
-
-        invoices.forEach(invoice => {
-            totalInvoices += invoice.totalAmount;
-        });
-
-        expenses.forEach(expense => {
-            totalExpenses += expense.totalAmount;
-        });
-
-        const auditData = [];
-        invoices.forEach(invoice => {
-            auditData.push({
+        // Create audit data by merging invoices and expenses
+        const auditData = [
+            ...invoices.map(invoice => ({
                 type: 'Invoice',
                 createdAt: invoice.createdAt,
                 number: invoice.invoiceNumber,
                 amount: invoice.totalAmount
-            });
-        });
-        expenses.forEach(expense => {
-            auditData.push({
+            })),
+            ...expenses.map(expense => ({
                 type: 'Expense',
                 createdAt: expense.createdAt,
                 number: expense.expenseId,
                 amount: expense.totalAmount
-            });
-        });
+            }))
+        ];
 
+        // Sorting the merged data by date in descending order
         auditData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-        res.status(200).json({ auditData ,totalExpenses,totalInvoices});
+        res.status(200).json({ auditData, totalExpenses, totalInvoices });
     } catch (error) {
         console.error("Error fetching audit data:", error);
         res.status(500).json({ error: "Internal server error" });

@@ -2,7 +2,8 @@ const Customer = require("../models/customer");
 
 const addCustomer = async (req, res) => {
   try {
-    const { userId, name, contact, address, details, previousCreditBalance, email } = req.body;
+    const userId = req.user.id;
+    const {name, contact, address, details, previousCreditBalance, email } = req.body;
     const newCustomer = await Customer.create({
       userId,
       name,

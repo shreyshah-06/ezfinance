@@ -82,7 +82,7 @@ const Expense = () => {
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
-        const response = await axiosInstance.post("/expense/getall", {});
+        const response = await axiosInstance.get("/expense/getall");
         setExpenses(response.data.expenses);
         setFilteredExpenses(response.data.expenses); // Initialize filteredExpenses
       } catch (error) {
@@ -107,7 +107,7 @@ const Expense = () => {
   const handleAddExpense = async (expense) => {
     try {
       await axiosInstance.post("/expense/add", expense);
-      const response = await axiosInstance.post("/expense/getall", {});
+      const response = await axiosInstance.get("/expense/getall");
       setExpenses(response.data.expenses);
       setShowAddExpense(false);
       toast.success("Expense added successfully!");

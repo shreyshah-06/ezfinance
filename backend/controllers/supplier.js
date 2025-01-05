@@ -1,19 +1,14 @@
 const Supplier = require("../models/supplier");
-const jwt = require("jsonwebtoken");
+
 const addSupplier = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1];
-      console.log(token);
-      let userId;
-      jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
-        if (err) {
-          return res.status(401).json({ error: "Unauthorized" });
-        } else {
-          userId = decodedToken.id; 
-          console.log(userId); 
-        }
-      });
-    const {name, contact, address, details, previousCreditBalance } = req.body;
+    const userId = req.user.id;
+    const { name, contact, address, details, previousCreditBalance } = req.body;
+
+    // Validate required fields
+    if (!name || !contact || !address) {
+      return res.status(400).json({ error: "Name, contact, and address are required." });
+    }
 
     const newSupplier = await Supplier.create({
       userId,
@@ -33,39 +28,34 @@ const addSupplier = async (req, res) => {
 
 const getAllSuppliersByUserId = async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1];
-    let userId;
-    jwt.verify(token, process.env.SECRET_KEY, async (err, decodedToken) => {
-      if (err) {
-        return res.status(401).json({ error: "Unauthorized" });
-      } else {
-        userId = decodedToken.id;
-        console.log(userId);
-        const suppliers = await Supplier.findAll({ where: { userId } });
-        res.status(200).json({ suppliers });
-      }
-    });
+    const userId = req.user.id;
+
+    const suppliers = await Supplier.findAll({ where: { userId } });
+
+    res.status(200).json({ suppliers });
   } catch (error) {
-    console.error("Error fetching Suppliers:", error);
+    console.error("Error fetching suppliers:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
 const deleteSupplier = async (req, res) => {
   try {
-        const { id } = req.body;
-        const deletedSupplier= await Supplier.destroy({
-          where: {
-            id
-          }
-        });
-        if (deletedSupplier === 0) {
-          return res.status(404).json({ error: "Category not found" });
-        }
-        res.status(200).json({ message: "Supplier deleted successfully" });
+    const { id } = req.params; // Get supplier ID from params
+
+    const deletedSupplier = await Supplier.destroy({
+      where: { id },
+    });
+
+    if (deletedSupplier === 0) {
+      return res.status(404).json({ error: "Supplier not found" });
+    }
+
+    res.status(200).json({ message: "Supplier deleted successfully" });
   } catch (error) {
-    console.error("Error deleting Supplier:", error);
+    console.error("Error deleting supplier:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-module.exports = {addSupplier,getAllSuppliersByUserId,deleteSupplier}
+
+module.exports = { addSupplier, getAllSuppliersByUserId, deleteSupplier };

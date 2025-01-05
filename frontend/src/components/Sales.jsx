@@ -80,7 +80,7 @@ const Sales = () => {
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        const response = await axiosInstance.post("/sales/getall", {});
+        const response = await axiosInstance.get("/sales/getall");
         setSales(response.data.sales);
         setFilteredSales(response.data.sales);
       } catch (error) {

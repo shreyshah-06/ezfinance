@@ -45,7 +45,7 @@ const Supplier = () => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const response = await axiosInstance.post("/supplier/getall", {});
+        const response = await axiosInstance.get("/supplier/getall");
         setSuppliers(response.data.suppliers);
       } catch (error) {
         console.error("Error fetching suppliers:", error);
@@ -56,8 +56,8 @@ const Supplier = () => {
 
   const handleDelete = async (supplierId) => {
     try {
-      await axiosInstance.post("/supplier/delete", { id: supplierId });
-      const response = await axiosInstance.post("/supplier/getall", {});
+      await axiosInstance.delete(`/supplier/delete/${supplierId}`);
+      const response = await axiosInstance.get("/supplier/getall");
       setSuppliers(response.data.suppliers);
       toast.success("Supplier Deleted Successfully", { autoClose: 2000 });
     } catch (error) {
@@ -68,7 +68,7 @@ const Supplier = () => {
   const handleAddSupplier = async (supplier) => {
     try {
       await axiosInstance.post("/supplier/add", supplier);
-      const response = await axiosInstance.post("/supplier/getall", {});
+      const response = await axiosInstance.get("/supplier/getall");
       setSuppliers(response.data.suppliers);
       setShowAddSupplier(false);
       toast.success("Supplier Added Successfully", { autoClose: 2000 });
