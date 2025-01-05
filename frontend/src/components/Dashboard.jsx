@@ -12,11 +12,17 @@ import {
   TableCell,
   TableBody,
   LinearProgress,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
 } from "@mui/material";
 import Chart from "react-apexcharts";
+import axiosInstance from "../helper/axios";
 
 export default function Dashboard() {
-  // dummy data for representation
   const [dashboardData, setDashboardData] = useState({
     totalRevenue: 500000,
     totalExpenses: 200000,
@@ -30,22 +36,96 @@ export default function Dashboard() {
       { id: 1, name: "Invoice #101", amount: 15000, date: "2024-12-20" },
       { id: 2, name: "Invoice #102", amount: 20000, date: "2024-12-21" },
     ],
+    topItems: [
+      { name: "Product A", stock: 10 },
+      { name: "Product B", stock: 15 },
+      { name: "Product C", stock: 8 },
+      { name: "Product D", stock: 20 },
+      { name: "Product E", stock: 25 },
+    ],
   });
 
   const [salesGoal, setSalesGoal] = useState(100000); // Default goal
+  const [openGoalDialog, setOpenGoalDialog] = useState(false);
+  const [newSalesGoal, setNewSalesGoal] = useState(salesGoal);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        // const response = await axiosInstance.get('/dashboard/full');
-        // setDashboardData(response.data);
+        const response = await axiosInstance.get("/dashboard/summary");
+        setDashboardData((prevData) => ({
+          ...prevData,
+          totalRevenue: response.data.totalRevenue || 0,
+          totalExpenses: response.data.totalExpenses || 0,
+          totalTaxes: response.data.totalTaxes || 0,
+          profit: response.data.profit || 0,
+        }));
       } catch (error) {
         console.error(error);
       }
     };
+    // Fetch inventory summary
+    const fetchInventorySummary = async () => {
+      try {
+        const response = await axiosInstance.get(
+          "/dashboard/inventory/summary"
+        );
+        setDashboardData((prevData) => ({
+          ...prevData,
+          totalInventoryValue: response.data.totalInventoryValue || 0,
+          outOfStockItems: response.data.outOfStockItems || 0,
+          topItems: response.data.topItems || [],
+        }));
+      } catch (error) {
+        console.error("Error fetching inventory summary:", error);
+      }
+    };
+
+    const fetchTrendsData = async () => {
+      try {
+        const response = await axiosInstance.get("/dashboard/six-month-trends");
+        setDashboardData((prevData) => ({
+          ...prevData,
+          salesTrends: response.data.salesTrends,
+          expenseTrends: response.data.expenseTrends,
+          months: response.data.months,
+        }));
+      } catch (error) {
+        console.error("Error fetching trends data:", error);
+      }
+    };
+
+    // Fetch recent transactions
+    const fetchRecentTransactions = async () => {
+      try {
+        const response = await axiosInstance.get("/dashboard/invoice/recent");
+        setDashboardData((prevData) => ({
+          ...prevData,
+          recentTransactions: response.data.recentTransactions || [],
+        }));
+      } catch (error) {
+        console.error("Error fetching recent transactions:", error);
+      }
+    };
 
     fetchDashboardData();
+    fetchInventorySummary();
+    // fetchTrendsData();
+    fetchRecentTransactions();
   }, []);
+
+  const handleGoalChange = (event) => {
+    setNewSalesGoal(event.target.value);
+  };
+
+  const handleSaveGoal = () => {
+    setSalesGoal(newSalesGoal);
+    setOpenGoalDialog(false);
+  };
+
+  const handleCancelGoal = () => {
+    setOpenGoalDialog(false);
+  };
 
   return (
     <>
@@ -118,18 +198,15 @@ export default function Dashboard() {
                 options={{
                   chart: { type: "bar" },
                   xaxis: {
-                    categories: [
-                      "Product A",
-                      "Product B",
-                      "Product C",
-                      "Product D",
-                      "Product E",
-                    ],
+                    categories: dashboardData.topItems.map((item) => item.name), // Extract product names for x-axis
                   },
-                  colors: ["#4CAF50"],
+                  colors: ["#4CAF50"], // Bar color
                 }}
                 series={[
-                  { name: "Stock Levels", data: [10, 15, 8, 20, 25] }, // Mock data, replace with API
+                  {
+                    name: "Stock Levels",
+                    data: dashboardData.topItems.map((item) => item.stock), // Extract stock quantities for the data
+                  },
                 ]}
                 type="bar"
                 height="300"
@@ -175,15 +252,13 @@ export default function Dashboard() {
                   }}
                 >
                   {" "}
-                  (
-                  {
-                    ((dashboardData.totalRevenue / salesGoal) * 100).toFixed(1)}
+                  ({((dashboardData.totalRevenue / salesGoal) * 100).toFixed(1)}
                   %)
                 </span>
               </Typography>
               <LinearProgress
                 variant="determinate"
-                value={((dashboardData.totalRevenue / salesGoal) * 100)}
+                value={(dashboardData.totalRevenue / salesGoal) * 100}
                 sx={{
                   "& .MuiLinearProgress-bar": {
                     backgroundColor:
@@ -193,6 +268,13 @@ export default function Dashboard() {
                   },
                 }}
               />
+              <Button
+                variant="outlined"
+                sx={{ mt: 2 }}
+                onClick={() => setOpenGoalDialog(true)}
+              >
+                Modify Goal
+              </Button>
               {dashboardData.totalRevenue >= salesGoal && (
                 <Typography
                   variant="body2"
@@ -235,10 +317,16 @@ export default function Dashboard() {
                 <TableBody>
                   {dashboardData.recentTransactions.map((transaction) => (
                     <TableRow key={transaction.id}>
-                      <TableCell>{transaction.id}</TableCell>
-                      <TableCell>{transaction.name}</TableCell>
-                      <TableCell>₹{transaction.amount}</TableCell>
-                      <TableCell>{transaction.date}</TableCell>
+                      <TableCell>{`Invoice #${transaction.id}`}</TableCell>{" "}
+                      {/* Display Invoice # with the id */}
+                      <TableCell>{transaction.customerName}</TableCell>
+                      <TableCell>₹{transaction.totalAmount}</TableCell>
+                      <TableCell>
+                        {new Date(transaction.createdAt).toLocaleDateString(
+                          "en-GB"
+                        )}
+                      </TableCell>{" "}
+                      {/* Format date */}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -246,6 +334,28 @@ export default function Dashboard() {
             </Paper>
           </Box>
         </Box>
+        <Dialog open={openGoalDialog} onClose={handleCancelGoal}>
+          <DialogTitle>Set/Modify Sales Goal</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Sales Goal"
+              variant="outlined"
+              type="number"
+              fullWidth
+              value={newSalesGoal}
+              onChange={handleGoalChange}
+              sx={{ mt: 2 }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCancelGoal} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleSaveGoal} color="primary">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </>
   );

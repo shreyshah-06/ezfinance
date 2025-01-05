@@ -13,6 +13,7 @@ const salesRoutes = require('./routes/sale')
 const expenseRoutes = require('./routes/expense')
 const auditRoutes = require('./routes/audit')
 const gstRoutes = require('./routes/gst')
+const dashboardRoutes = require('./routes/dashboard')
 
 require('dotenv').config()
 const db = require('./config/database')
@@ -32,6 +33,7 @@ app.use("/api",salesRoutes)
 app.use("/api",expenseRoutes)
 app.use("/api",auditRoutes)
 app.use("/api",gstRoutes)
+app.use("/api",dashboardRoutes)
 
 const serverStart = async()=>{
     try {
