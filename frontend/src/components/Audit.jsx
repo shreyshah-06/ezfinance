@@ -9,7 +9,6 @@ import {
   TableRow,
   Typography,
   Paper,
-  IconButton,
   Grid,
   TextField,
   MenuItem,
@@ -81,36 +80,35 @@ const Audit = () => {
     fetchAuditData();
   }, []);
 
-  const filterAndSortAudit = () => {
-    let filtered = auditData.filter((audit) => {
-      if (sortOption === "Invoice") {
-        return audit.type === "Invoice";
-      } else if (sortOption === "Expense") {
-        return audit.type === "Expense";
-      }
-      return true;
-    });
-
-    if (sortOption) {
-      filtered.sort((a, b) => {
-        let valueA = a[sortOption];
-        let valueB = b[sortOption];
-
-        if (sortOption === "date") {
-          valueA = new Date(valueA);
-          valueB = new Date(valueB);
-        }
-
-        if (sortOrder === "asc") return valueA > valueB ? 1 : -1;
-        if (sortOrder === "desc") return valueA < valueB ? 1 : -1;
-        return 0;
-      });
-    }
-
-    setFilteredAuditData(filtered);
-  };
-
   useEffect(() => {
+    const filterAndSortAudit = () => {
+      let filtered = auditData.filter((audit) => {
+        if (sortOption === "Invoice") {
+          return audit.type === "Invoice";
+        } else if (sortOption === "Expense") {
+          return audit.type === "Expense";
+        }
+        return true;
+      });
+
+      if (sortOption) {
+        filtered.sort((a, b) => {
+          let valueA = a[sortOption];
+          let valueB = b[sortOption];
+
+          if (sortOption === "date") {
+            valueA = new Date(valueA);
+            valueB = new Date(valueB);
+          }
+
+          if (sortOrder === "asc") return valueA > valueB ? 1 : -1;
+          if (sortOrder === "desc") return valueA < valueB ? 1 : -1;
+          return 0;
+        });
+      }
+
+      setFilteredAuditData(filtered);
+    };
     filterAndSortAudit();
   }, [sortOption, sortOrder, auditData]);
 

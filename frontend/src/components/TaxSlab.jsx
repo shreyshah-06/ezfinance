@@ -10,7 +10,7 @@ import {
   Typography,
   Paper,
   IconButton,
-  Pagination
+  Pagination,
 } from "@mui/material";
 import { Add, Delete } from "@mui/icons-material";
 import { styled } from "@mui/system";
@@ -59,13 +59,15 @@ const TaxSlab = () => {
       setTaxSlabs((prev) => prev.filter((slab) => slab.id !== taxSlabId));
       if (response.status === 200) {
         toast.success("Tax Slab Deleted Successfully", {
-          position: "top-right",
-          autoClose: 2000,
+          autoClose: 1000,
         });
       }
     } catch (error) {
       console.error("Error deleting tax slab:", error);
-      toast.error("Failed to delete Tax Slab.");
+      toast.error("Failed to delete Tax Slab.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
     }
   };
 
@@ -82,8 +84,7 @@ const TaxSlab = () => {
       setTaxSlabs(response.data.taxSlabs);
       setShowAddTaxSlab(false);
       toast.success("Tax Slab Added Successfully", {
-        position: "top-right",
-        autoClose: 2000,
+        autoClose: 1000,
       });
     } catch (error) {
       console.error("Error adding tax slab:", error);
@@ -131,7 +132,10 @@ const TaxSlab = () => {
                 {paginatedtaxSlabs.length > 0 ? (
                   paginatedtaxSlabs.map((item, index) => (
                     <TableRow key={item.id} hover>
-                      <TableCell> {(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
+                      <TableCell>
+                        {" "}
+                        {(currentPage - 1) * itemsPerPage + index + 1}
+                      </TableCell>
                       <TableCell>{item.name}</TableCell>
                       <TableCell>{item.rate}</TableCell>
                       <TableCell align="center">

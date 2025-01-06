@@ -85,7 +85,10 @@ const Sales = () => {
         setFilteredSales(response.data.sales);
       } catch (error) {
         console.error("Error fetching sales:", error);
-        toast.error("Failed to fetch sales data.");
+        toast.error("Failed to fetch sales data.", {
+          position: "top-right",
+          autoClose: 2000,
+        });
       }
     };
     fetchSales();
@@ -98,7 +101,10 @@ const Sales = () => {
         setProducts(response.data.products);
       } catch (error) {
         console.error("Error fetching products:", error);
-        toast.error("Failed to fetch product data.");
+        toast.error("Failed to fetch product data.", {
+          position: "top-right",
+          autoClose: 2000,
+        });
       }
     };
     fetchProducts();
@@ -110,43 +116,43 @@ const Sales = () => {
     setProductMap(productMap);
   }, [products]);
 
-  const filterAndSortSales = () => {
-    let filtered = sales;
-
-    if (searchText) {
-      filtered = filtered.filter((sale) =>
-        sale.customerName?.toLowerCase().includes(searchText.toLowerCase())
-      );
-    }
-
-    if (productFilter) {
-      filtered = filtered.filter(
-        (sale) => sale.productId === parseInt(productFilter, 10)
-      );
-    }
-    if (sortOption) {
-      filtered = [...filtered].sort((a, b) => {
-        let valueA = a[sortOption];
-        let valueB = b[sortOption];
-
-        if (sortOption === "date") {
-          valueA = new Date(valueA);
-          valueB = new Date(valueB);
-        }
-        if (sortOption === "productId") {
-          valueA = productMap.get(a.productId);
-          valueB = productMap.get(b.productId);
-        }
-
-        if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
-        if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-      });
-    }
-
-    setFilteredSales(filtered);
-  };
   useEffect(() => {
+    const filterAndSortSales = () => {
+      let filtered = sales;
+  
+      if (searchText) {
+        filtered = filtered.filter((sale) =>
+          sale.customerName?.toLowerCase().includes(searchText.toLowerCase())
+        );
+      }
+  
+      if (productFilter) {
+        filtered = filtered.filter(
+          (sale) => sale.productId === parseInt(productFilter, 10)
+        );
+      }
+      if (sortOption) {
+        filtered = [...filtered].sort((a, b) => {
+          let valueA = a[sortOption];
+          let valueB = b[sortOption];
+  
+          if (sortOption === "date") {
+            valueA = new Date(valueA);
+            valueB = new Date(valueB);
+          }
+          if (sortOption === "productId") {
+            valueA = productMap.get(a.productId);
+            valueB = productMap.get(b.productId);
+          }
+  
+          if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
+          if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
+          return 0;
+        });
+      }
+  
+      setFilteredSales(filtered);
+    };
     filterAndSortSales();
   }, [searchText, sortOption, sortOrder, productFilter, sales]);
 

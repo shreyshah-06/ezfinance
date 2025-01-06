@@ -82,23 +82,29 @@ const Navbar = () => {
     }
 
     try {
-      const response = await axiosInstance.patch(
-        "/changepassword",
-        {
-          currentPassword: passwords.oldPassword,
-          newPassword: passwords.newPassword,
-        },
-      );
+      const response = await axiosInstance.patch("/changepassword", {
+        currentPassword: passwords.oldPassword,
+        newPassword: passwords.newPassword,
+      });
 
       if (response.status === 200) {
-        console.log('heree')
-        toast.success("Password changed successfully!"); // Success toast
+        console.log("heree");
+        toast.success("Password changed successfully!", {
+          position: "top-right",
+          autoClose: 2000,
+        }); // Success toast
         handleDialogClose();
       } else {
-        toast.error(`Error: ${response.data.message}`); // Error toast
+        toast.error(`Error: ${response.data.message}`, {
+          position: "top-right",
+          autoClose: 2000,
+        }); // Error toast
       }
     } catch (error) {
-      toast.error("Server Error. Please try again later."); // Error toast
+      toast.error("Server Error. Please try again later.", {
+        position: "top-right",
+        autoClose: 2000,
+      }); // Error toast
     }
   };
 

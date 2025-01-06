@@ -17,13 +17,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import {
-  Add,
-  Delete,
-  AttachMoney,
-  AccountBalance,
-  Visibility,
-} from "@mui/icons-material";
+import { Add, Delete, AccountBalance, Visibility } from "@mui/icons-material";
 import { styled } from "@mui/system";
 import { toast, ToastContainer } from "react-toastify";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -125,60 +119,62 @@ const Invoice = () => {
       });
     } catch (error) {
       console.error("Error deleting invoice:", error);
-      toast.error("Failed to delete invoice.");
+      toast.error("Failed to delete invoice.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
     }
   };
 
   const handleFileTax = () => {
     toast.success("Tax Filed Successfully!", {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 2000,
     });
-  };
-
-  const filterAndSortInvoices = () => {
-    let filtered = invoices.filter((invoice) => {
-      const matchesSearch =
-        invoice.customerName
-          .toLowerCase()
-          .includes(String(filter).toLowerCase()) ||
-        String(invoice.invoiceNumber)
-          .toLowerCase()
-          .includes(String(filter).toLowerCase());
-
-      const matchesDate =
-        !specificDate ||
-        new Date(invoice.date).toDateString() ===
-          new Date(specificDate).toDateString();
-
-      return matchesSearch && matchesDate;
-    });
-
-    if (sortBy) {
-      filtered.sort((a, b) => {
-        let valueA = a[sortBy];
-        let valueB = b[sortBy];
-
-        if (sortBy === "date") {
-          valueA = new Date(valueA);
-          valueB = new Date(valueB);
-        }
-
-        if (sortBy === "totalAmount" || sortBy === "taxAmount") {
-          valueA = parseFloat(valueA) || 0;
-          valueB = parseFloat(valueB) || 0;
-        }
-
-        if (sortOrder === "asc") return valueA > valueB ? 1 : -1;
-        if (sortOrder === "desc") return valueA < valueB ? 1 : -1;
-        return 0;
-      });
-    }
-
-    setFilteredInvoice(filtered);
   };
 
   useEffect(() => {
+    const filterAndSortInvoices = () => {
+      let filtered = invoices.filter((invoice) => {
+        const matchesSearch =
+          invoice.customerName
+            .toLowerCase()
+            .includes(String(filter).toLowerCase()) ||
+          String(invoice.invoiceNumber)
+            .toLowerCase()
+            .includes(String(filter).toLowerCase());
+
+        const matchesDate =
+          !specificDate ||
+          new Date(invoice.date).toDateString() ===
+          new Date(specificDate).toDateString();
+
+        return matchesSearch && matchesDate;
+      });
+
+      if (sortBy) {
+        filtered.sort((a, b) => {
+          let valueA = a[sortBy];
+          let valueB = b[sortBy];
+
+          if (sortBy === "date") {
+            valueA = new Date(valueA);
+            valueB = new Date(valueB);
+          }
+
+          if (sortBy === "totalAmount" || sortBy === "taxAmount") {
+            valueA = parseFloat(valueA) || 0;
+            valueB = parseFloat(valueB) || 0;
+          }
+
+          if (sortOrder === "asc") return valueA > valueB ? 1 : -1;
+          if (sortOrder === "desc") return valueA < valueB ? 1 : -1;
+          return 0;
+        });
+      }
+
+      setFilteredInvoice(filtered);
+    };
     filterAndSortInvoices();
   }, [filter, specificDate, sortBy, sortOrder, invoices]);
 
@@ -219,7 +215,9 @@ const Invoice = () => {
             {/* Top Row: Invoice Amount and Tax Due */}
             <Grid item xs={12} sm={6} md={4}>
               <InfoBox>
-                <IconWrapper><Typography sx={{ fontSize: '20px' }}>₹</Typography></IconWrapper>
+                <IconWrapper>
+                  <Typography sx={{ fontSize: "20px" }}>₹</Typography>
+                </IconWrapper>
                 <Box>
                   <Typography variant="subtitle2" color="textSecondary">
                     Invoice Amount

@@ -7,8 +7,8 @@ const {
 } = require("../controllers/tax");
 const { authMiddleware } = require("../middleware/authValidators");
 
-router.route("/tax/add").post(authMiddleware, addTax);
-router.route("/tax/getall").get(authMiddleware, getAllTaxesByUserId);
-router.route("/tax/delete/:id").delete(authMiddleware, deleteTaxSlab);
+router.route("/add").post(authMiddleware, addTax);
+router.route("/getall").get(authMiddleware, getAllTaxesByUserId);
+router.route("/delete/:id").delete(authMiddleware, deleteTaxSlab);
 
 module.exports = router;

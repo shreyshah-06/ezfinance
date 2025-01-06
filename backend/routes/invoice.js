@@ -8,10 +8,10 @@ const {
 } = require("../controllers/invoice");
 const { authMiddleware } = require("../middleware/authValidators");
 
-router.route("/invoice/add").post(authMiddleware, addInvoice);
-router.route("/invoice/getall").get(authMiddleware, getInvoicesByUserId);
-router.route("/invoice/delete/:invoiceId").delete(authMiddleware, deleteInvoice);
+router.route("/add").post(authMiddleware, addInvoice);
+router.route("/getall").get(authMiddleware, getInvoicesByUserId);
+router.route("/delete/:invoiceId").delete(authMiddleware, deleteInvoice);
 router
-  .route("/invoice/:invoiceId/items")
+  .route("/:invoiceId/items")
   .get(authMiddleware, getInvoiceItemsById);
 module.exports = router;

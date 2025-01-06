@@ -99,10 +99,12 @@ const Expense = () => {
       toast.success("Expense deleted successfully!");
     } catch (error) {
       console.error("Error deleting expense:", error);
-      toast.error("Failed to delete expense.");
+      toast.error("Failed to delete expense.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
     }
   };
-  
 
   const handleAddExpense = async (expense) => {
     try {
@@ -113,42 +115,45 @@ const Expense = () => {
       toast.success("Expense added successfully!");
     } catch (error) {
       console.error("Error adding expense:", error);
-      toast.error("Failed to add expense.");
-    }
-  };
-
-  const filterAndSortExpenses = () => {
-    let filtered = expenses.filter((expense) => {
-      const matchesSearch =
-        expense.vendorName.toLowerCase().includes(searchText.toLowerCase()) ||
-        expense.expenseName.toLowerCase().includes(searchText.toLowerCase());
-
-      return matchesSearch;
-    });
-
-    if (sortOption) {
-      filtered.sort((a, b) => {
-        let valueA = a[sortOption];
-        let valueB = b[sortOption];
-
-        if (sortOption === "date") {
-          valueA = new Date(valueA);
-          valueB = new Date(valueB);
-        } else if (sortOption === "totalAmount") {
-          valueA = parseFloat(valueA);
-          valueB = parseFloat(valueB);
-        }
-
-        if (sortOrder === "asc") return valueA > valueB ? 1 : -1;
-        if (sortOrder === "desc") return valueA < valueB ? 1 : -1;
-        return 0;
+      toast.error("Failed to add expense.", {
+        position: "top-right",
+        autoClose: 2000,
       });
     }
-
-    setFilteredExpenses(filtered);
   };
 
+  
   useEffect(() => {
+    const filterAndSortExpenses = () => {
+      let filtered = expenses.filter((expense) => {
+        const matchesSearch =
+          expense.vendorName.toLowerCase().includes(searchText.toLowerCase()) ||
+          expense.expenseName.toLowerCase().includes(searchText.toLowerCase());
+  
+        return matchesSearch;
+      });
+  
+      if (sortOption) {
+        filtered.sort((a, b) => {
+          let valueA = a[sortOption];
+          let valueB = b[sortOption];
+  
+          if (sortOption === "date") {
+            valueA = new Date(valueA);
+            valueB = new Date(valueB);
+          } else if (sortOption === "totalAmount") {
+            valueA = parseFloat(valueA);
+            valueB = parseFloat(valueB);
+          }
+  
+          if (sortOrder === "asc") return valueA > valueB ? 1 : -1;
+          if (sortOrder === "desc") return valueA < valueB ? 1 : -1;
+          return 0;
+        });
+      }
+  
+      setFilteredExpenses(filtered);
+    };
     filterAndSortExpenses();
   }, [searchText, sortOption, sortOrder, expenses]);
 
@@ -161,7 +166,7 @@ const Expense = () => {
   const toggleSortOrder = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
-  
+
   const totalAmount = filteredExpenses.reduce(
     (sum, expense) => sum + parseFloat(expense.totalAmount),
     0
@@ -202,13 +207,13 @@ const Expense = () => {
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
                   displayEmpty
-                  sx={{backgroundColor: "#e9efeb" }}
+                  sx={{ backgroundColor: "#e9efeb" }}
                 >
                   <MenuItem value="">Sort By</MenuItem>
                   <MenuItem value="totalAmount">Total Expense</MenuItem>
                   <MenuItem value="date">Date</MenuItem>
                 </Select>
-                <Box sx={{ cursor: "pointer" }}onClick={toggleSortOrder}>
+                <Box sx={{ cursor: "pointer" }} onClick={toggleSortOrder}>
                   {sortOrder === "asc" ? <ArrowUpward /> : <ArrowDownward />}
                 </Box>
 
@@ -231,7 +236,9 @@ const Expense = () => {
             </Grid>
             <Grid item xs={12} sm={4} md={3}>
               <TotalAmountBox>
-                <IconWrapper><Typography sx={{ fontSize: '20px' }}>₹</Typography></IconWrapper>
+                <IconWrapper>
+                  <Typography sx={{ fontSize: "20px" }}>₹</Typography>
+                </IconWrapper>
                 <Box>
                   <Typography variant="subtitle2" color="textSecondary">
                     Expenses
@@ -286,7 +293,10 @@ const Expense = () => {
                 <TableBody>
                   {paginatedExpenses.map((expense, index) => (
                     <TableRow key={index} hover>
-                      <TableCell> {(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
+                      <TableCell>
+                        {" "}
+                        {(currentPage - 1) * itemsPerPage + index + 1}
+                      </TableCell>
                       <TableCell>{expense.vendorName}</TableCell>
                       <TableCell>{expense.expenseName}</TableCell>
                       <TableCell>

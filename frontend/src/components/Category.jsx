@@ -111,7 +111,7 @@ const Category = () => {
                 }}
               >
                 <TextField
-                    fullWidth
+                  fullWidth
                   label="Search by Category Name"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}

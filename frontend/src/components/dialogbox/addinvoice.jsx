@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../helper/axios';
+import React, { useState, useEffect } from "react";
+import axiosInstance from "../../helper/axios";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Typography,
   TextField,
@@ -16,15 +16,22 @@ import {
   MenuItem,
   IconButton,
   Box,
-  Paper
-} from '@mui/material';
-import { Delete } from '@mui/icons-material';
+  Paper,
+} from "@mui/material";
+import { Delete, Close } from "@mui/icons-material";
 
 function AddInvoice() {
-  const [customerName, setCustomerName] = useState('');
+  const [customerName, setCustomerName] = useState("");
   const [date, setDate] = useState(new Date().toISOString().substr(0, 10));
   const [products, setProducts] = useState([
-    { productId: '', productName: '', quantity: 0, discountPercentage: 0, tax: 0, total: 0 }
+    {
+      productId: "",
+      productName: "",
+      quantity: 0,
+      discountPercentage: 0,
+      tax: 0,
+      total: 0,
+    },
   ]);
   const [inventory, setInventory] = useState([]);
   const [taxRates, setTaxRates] = useState([]);
@@ -36,7 +43,6 @@ function AddInvoice() {
     const taxAmount = (totalWithDiscount * taxRate) / 100;
     return totalWithDiscount + taxAmount;
   };
-  
 
   useEffect(() => {
     const fetchInventory = async () => {
@@ -61,9 +67,9 @@ function AddInvoice() {
   }, []);
 
   const handleProductNameChange = (index, value) => {
-    const product = inventory.find(item => item.model === value);
+    const product = inventory.find((item) => item.model === value);
     if (product) {
-      const taxRateObj = taxRates.find(rate => rate.id === product.taxId);
+      const taxRateObj = taxRates.find((rate) => rate.id === product.taxId);
       const taxRate = taxRateObj ? taxRateObj.rate : 0;
       const newProducts = [...products];
       newProducts[index] = {
@@ -82,7 +88,7 @@ function AddInvoice() {
       setProducts(newProducts);
     }
   };
-  
+
   const handleQuantityChange = (index, value) => {
     const newProducts = [...products];
     newProducts[index].quantity = parseInt(value) || 0;
@@ -110,7 +116,14 @@ function AddInvoice() {
   const addProduct = () => {
     setProducts([
       ...products,
-      { productId: '', productName: '', quantity: 0, discountPercentage: 0, tax: 0, total: 0 }
+      {
+        productId: "",
+        productName: "",
+        quantity: 0,
+        discountPercentage: 0,
+        tax: 0,
+        total: 0,
+      },
     ]);
   };
 
@@ -127,41 +140,73 @@ function AddInvoice() {
       const invoiceData = {
         customerName,
         date,
-        products: products.map(product => ({
+        products: products.map((product) => ({
           productId: product.productId,
           quantity: product.quantity,
           price: product.price,
           discountPercentage: product.discountPercentage,
-          taxPercentage: product.tax
-        }))
+          taxPercentage: product.tax,
+        })),
       };
-      const response = await axiosInstance.post('/invoice/add', invoiceData);
-      navigate('/invoice');
-      console.log('Invoice saved successfully:', response.data);
+      const response = await axiosInstance.post("/invoice/add", invoiceData);
+      navigate("/invoice");
+      console.log("Invoice saved successfully:", response.data);
     } catch (error) {
-      toast.error('Error Adding Invoice', {
+      toast.error("Error Adding Invoice", {
         position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+        autoClose: 2000,
       });
-      console.error('Error saving invoice:', error);
+      console.error("Error saving invoice:", error);
     }
   };
 
   const billAmount = products.reduce((acc, product) => acc + product.total, 0);
 
+  const handleClose = () => {
+    navigate("/invoice");
+  };
+
   return (
-    <Box sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'linear-gradient(to right, #c4d3c8, #a8beae, #b1c5b7)', minHeight: '100vh' }}>
-      <Paper elevation={3} sx={{ p: 3, width: '100%', maxWidth: '1200px' }}>
-        <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#495057' }}>
-          Add Invoice
-        </Typography>
+    <Box
+      sx={{
+        p: 4,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        background: "linear-gradient(to right, #c4d3c8, #a8beae, #b1c5b7)",
+        minHeight: "100vh",
+      }}
+    >
+      <Paper elevation={3} sx={{ p: 3, width: "100%", maxWidth: "1200px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
+        >
+          {/* Close Button */}
+          {/* Invoice Title */}
+          <Typography
+            variant="h4"
+            align="center"
+            gutterBottom
+            sx={{
+              fontWeight: "bold",
+              color: "#495057",
+              flex: 1,
+              textAlign: "center",
+            }}
+          >
+            Add Invoice
+          </Typography>
+            <IconButton onClick={handleClose} sx={{ alignSelf: "flex-start" }}>
+              <Close color="error" />
+            </IconButton>
+        </Box>
         <form onSubmit={handleSubmit}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
             <TextField
               label="Customer Name"
               value={customerName}
@@ -199,24 +244,34 @@ function AddInvoice() {
                   <TableCell>
                     <Select
                       value={product.productName}
-                      onChange={(e) => handleProductNameChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleProductNameChange(index, e.target.value)
+                      }
                       fullWidth
                       required
                     >
                       <MenuItem value="">Select Product</MenuItem>
-                      {inventory.map(item => (
-                        <MenuItem key={item.id} value={item.model}>{item.model}</MenuItem>
+                      {inventory.map((item) => (
+                        <MenuItem key={item.id} value={item.model}>
+                          {item.model}
+                        </MenuItem>
                       ))}
                     </Select>
                   </TableCell>
                   <TableCell>
-                    <TextField value={product.price} InputProps={{ readOnly: true }} fullWidth />
+                    <TextField
+                      value={product.price}
+                      InputProps={{ readOnly: true }}
+                      fullWidth
+                    />
                   </TableCell>
                   <TableCell>
                     <TextField
                       type="number"
                       value={product.quantity}
-                      onChange={(e) => handleQuantityChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleQuantityChange(index, e.target.value)
+                      }
                       fullWidth
                     />
                   </TableCell>
@@ -224,15 +279,25 @@ function AddInvoice() {
                     <TextField
                       type="number"
                       value={product.discountPercentage}
-                      onChange={(e) => handleDiscountChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleDiscountChange(index, e.target.value)
+                      }
                       fullWidth
                     />
                   </TableCell>
                   <TableCell>
-                    <TextField value={product.tax} InputProps={{ readOnly: true }} fullWidth />
+                    <TextField
+                      value={product.tax}
+                      InputProps={{ readOnly: true }}
+                      fullWidth
+                    />
                   </TableCell>
                   <TableCell>
-                    <TextField value={product.total} InputProps={{ readOnly: true }} fullWidth />
+                    <TextField
+                      value={product.total}
+                      InputProps={{ readOnly: true }}
+                      fullWidth
+                    />
                   </TableCell>
                   <TableCell>
                     <IconButton onClick={() => deleteProduct(index)}>
@@ -244,7 +309,7 @@ function AddInvoice() {
             </TableBody>
           </Table>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
             <Button variant="contained" color="primary" onClick={addProduct}>
               Add Product
             </Button>
@@ -253,7 +318,7 @@ function AddInvoice() {
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
             <Button type="submit" variant="contained" color="success">
               Save Invoice
             </Button>

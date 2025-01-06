@@ -37,13 +37,20 @@ const Signup = () => {
     const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
     if (!passwordRegex.test(signupData.password)) {
       toast.error(
-        "Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number."
+        "Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number.",
+        {
+          position: "top-right",
+          autoClose: 2000,
+        }
       );
       return;
     }
 
     if (signupData.password !== signupData.confirmPassword) {
-      toast.error("Passwords do not match.");
+      toast.error("Passwords do not match.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
       return;
     }
 
@@ -55,7 +62,10 @@ const Signup = () => {
       toast.success("Signup successful!");
       console.log("Signup response:", response.data);
     } catch (error) {
-      toast.error("Signup failed. Please try again.");
+      toast.error("Signup failed. Please try again.", {
+        position: "top-right",
+        autoClose: 2000,
+      });
       console.error("Signup error:", error);
     }
   };
@@ -101,7 +111,6 @@ const Signup = () => {
             />
           </Box>
 
-
           {/* Title */}
           <Typography
             variant="h4"
@@ -140,12 +149,12 @@ const Signup = () => {
             size="small"
             sx={{
               mb: 2,
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#b6d1a4',
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#b6d1a4",
                 },
-                '&:hover fieldset': {
-                  borderColor: '#627254',
+                "&:hover fieldset": {
+                  borderColor: "#627254",
                 },
               },
             }}
@@ -161,12 +170,12 @@ const Signup = () => {
             size="small"
             sx={{
               mb: 2,
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#b6d1a4',
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#b6d1a4",
                 },
-                '&:hover fieldset': {
-                  borderColor: '#627254',
+                "&:hover fieldset": {
+                  borderColor: "#627254",
                 },
               },
             }}
@@ -182,12 +191,12 @@ const Signup = () => {
             size="small"
             sx={{
               mb: 2,
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#b6d1a4',
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#b6d1a4",
                 },
-                '&:hover fieldset': {
-                  borderColor: '#627254',
+                "&:hover fieldset": {
+                  borderColor: "#627254",
                 },
               },
             }}
@@ -215,12 +224,12 @@ const Signup = () => {
             size="small"
             sx={{
               mb: 2,
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#b6d1a4',
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#b6d1a4",
                 },
-                '&:hover fieldset': {
-                  borderColor: '#627254',
+                "&:hover fieldset": {
+                  borderColor: "#627254",
                 },
               },
             }}
@@ -247,12 +256,12 @@ const Signup = () => {
             size="small"
             sx={{
               mb: 2,
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#b6d1a4',
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#b6d1a4",
                 },
-                '&:hover fieldset': {
-                  borderColor: '#627254',
+                "&:hover fieldset": {
+                  borderColor: "#627254",
                 },
               },
             }}
@@ -264,17 +273,17 @@ const Signup = () => {
             fullWidth
             onClick={handleSubmit}
             sx={{
-              backgroundColor: '#627254',
-              color: '#FBFADA',
-              fontWeight: 'bold',
+              backgroundColor: "#627254",
+              color: "#FBFADA",
+              fontWeight: "bold",
               height: 40,
               fontSize: "0.9rem",
               textTransform: "none",
-              transition: 'all 0.3s ease',
+              transition: "all 0.3s ease",
               ":hover": {
-                backgroundColor: '#4b5e3f',
-                boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.2)',
-                transform: 'scale(1.05)',
+                backgroundColor: "#4b5e3f",
+                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.2)",
+                transform: "scale(1.05)",
               },
             }}
           >
@@ -287,7 +296,7 @@ const Signup = () => {
             align="center"
             sx={{ mt: 2, fontSize: { xs: "0.85rem", sm: "0.9rem" } }}
           >
-            Already have an account?{' '}
+            Already have an account?{" "}
             <Typography
               component="span"
               sx={{ color: "blue", cursor: "pointer" }}
