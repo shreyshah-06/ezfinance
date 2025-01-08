@@ -5,7 +5,7 @@ require("dotenv").config();
 const db = require("./config/database");
 const rateLimit = require("express-rate-limit");
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 
 // Set up Rate Limiting
 const limiter = rateLimit({
