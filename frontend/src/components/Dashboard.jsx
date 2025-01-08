@@ -110,7 +110,7 @@ export default function Dashboard() {
 
     fetchDashboardData();
     fetchInventorySummary();
-    // fetchTrendsData();
+    fetchTrendsData();
     fetchRecentTransactions();
   }, []);
 
