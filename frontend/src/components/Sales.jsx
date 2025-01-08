@@ -154,7 +154,7 @@ const Sales = () => {
       setFilteredSales(filtered);
     };
     filterAndSortSales();
-  }, [searchText, sortOption, sortOrder, productFilter, sales]);
+  }, [searchText, sortOption, sortOrder, productFilter, sales, products, productMap]);
 
   const paginatedSales = filteredSales.slice(
     (currentPage - 1) * itemsPerPage,

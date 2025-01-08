@@ -92,7 +92,34 @@ const Inventory = () => {
     fetchInventory();
   }, []);
 
-  const filterAndSortInventory = () => {
+  // const filterAndSortInventory = () => {
+  //   let filtered = inventory.filter((item) => {
+  //     const matchesSearch =
+  //       item.model.toLowerCase().includes(filter.toLowerCase()) ||
+  //       item.serialNumber.toLowerCase().includes(filter.toLowerCase());
+  //     const matchesStock = showOutOfStock || item.quantity > 0;
+  //     return matchesSearch && matchesStock;
+  //   });
+
+  //   if (sortBy) {
+  //     filtered.sort((a, b) => {
+  //       let valueA = a[sortBy];
+  //       let valueB = b[sortBy];
+
+  //       // Convert values to lowercase for string comparison
+  //       if (typeof valueA === "string") valueA = valueA.toLowerCase();
+  //       if (typeof valueB === "string") valueB = valueB.toLowerCase();
+
+  //       if (sortOrder === "asc") return valueA > valueB ? 1 : -1;
+  //       if (sortOrder === "desc") return valueA < valueB ? 1 : -1;
+  //       return 0;
+  //     });
+  //   }
+
+  //   setFilteredInventory(filtered);
+  // };
+
+  useEffect(() => {
     let filtered = inventory.filter((item) => {
       const matchesSearch =
         item.model.toLowerCase().includes(filter.toLowerCase()) ||
@@ -106,7 +133,6 @@ const Inventory = () => {
         let valueA = a[sortBy];
         let valueB = b[sortBy];
 
-        // Convert values to lowercase for string comparison
         if (typeof valueA === "string") valueA = valueA.toLowerCase();
         if (typeof valueB === "string") valueB = valueB.toLowerCase();
 
@@ -117,10 +143,6 @@ const Inventory = () => {
     }
 
     setFilteredInventory(filtered);
-  };
-
-  useEffect(() => {
-    filterAndSortInventory();
   }, [filter, showOutOfStock, sortBy, sortOrder, inventory]);
 
   const handleFilterChange = (event) => setFilter(event.target.value);
