@@ -14,6 +14,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AppLogo from "../assets/ezfinance.png";
+import axiosInstance from "../helper/axios";
 
 const Signup = () => {
   const [signupData, setSignupData] = useState({
@@ -55,10 +56,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/register",
-        signupData
-      );
+      const response = await axiosInstance.post("/register", signupData);
       toast.success("Signup successful!");
       console.log("Signup response:", response.data);
     } catch (error) {

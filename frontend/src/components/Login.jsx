@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AppLogo from '../assets/ezfinance.png';
+import axiosInstance from "../helper/axios";
 
 const Login = () => {
   const [loginData, setLoginData] = useState({ email: '', password: '' });
@@ -31,7 +32,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/login', loginData);
+      const response = await axiosInstance.post('/login', loginData);
       if (typeof response.data.token !== 'undefined') {
         localStorage.setItem('token', response.data.token);
         window.location.href = '/dashboard';
