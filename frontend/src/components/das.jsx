@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import {
   TextField,
   Button,
+  Card,
   Typography,
   IconButton,
   InputAdornment,
   Box,
   Grid,
-  Link
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { ToastContainer, toast } from "react-toastify";
@@ -140,7 +140,7 @@ const Signup = () => {
         }}
       >
         {/* Logo */}
-        <Box textAlign="center">
+        <Box textAlign="center" mb={2}>
           <img
             src={AppLogo}
             alt="App Logo"
@@ -148,10 +148,10 @@ const Signup = () => {
           />
         </Box>
         {/* Lottie Animation Greeting */}
-        <Box textAlign="center">
+        <Box textAlign="center" mb={2}>
           <Lottie
             animationData={welcomeAnimation}
-            style={{ height: "90px", width: "120px", margin: "0 auto" }}
+            style={{ height: "120px", width: "120px", margin: "0 auto" }}
             autoplay
             loop
           />
@@ -160,7 +160,7 @@ const Signup = () => {
         <Typography
           variant="h4"
           align="center"
-          mb={1}
+          mb={3}
           sx={{
             background: "linear-gradient(90deg, #627254, #FBFADA)",
             WebkitBackgroundClip: "text",
@@ -335,12 +335,17 @@ const Signup = () => {
         </Box>
 
         <Typography
+          variant="body2"
           align="center"
+          sx={{ mt: 2, fontSize: { xs: "0.85rem", sm: "0.9rem" } }}
         >
           Already have an account?{" "}
-          <Link href="/login" underline="hover" color="primary">
+          <Typography
+            component="span"
+            sx={{ color: "blue", cursor: "pointer" }}
+          >
             Login
-          </Link>
+          </Typography>
         </Typography>
       </Grid>
       <ToastContainer />
