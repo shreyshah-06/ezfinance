@@ -30,7 +30,6 @@ EZFinance is a comprehensive platform tailored to streamline business management
 - **Backend**: Node.js, Express.js
 - **Database**: PostgreSQL hosted on AWS RDS
 - **ORM**: Sequelize
-- **Hosting**: Frontend and backend deployed using modern deployment pipelines
 
 ## Setup and Deployment
 
