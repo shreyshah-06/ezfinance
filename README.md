@@ -8,6 +8,8 @@
 - [Features](#features)
 - [Technologies Used](#technologies-used)
 - [Setup and Deployment](#setup-and-deployment)
+  - [Local Setup](#local-setup)
+  - [Dockerized Setup](#dockerized-setup)
 - [Usage](#usage)
 - [Contributor](#contributor)
 
@@ -23,6 +25,7 @@ EZFinance is a comprehensive platform tailored to streamline business management
 - **Enhanced Performance**: Improved query execution time by 20% for faster operations.
 - **Secure and Reliable**: Built with robust authentication and AWS RDS-hosted databases.
 - **Database Optimization**: Implements database normalization and transaction control for efficient and modern DBMS practices.
+- **Dockerized Setup**: Easily deploy the platform using Docker for consistent, reliable, and fast setup across different environments.
 
 ## Technologies Used
 
@@ -30,10 +33,13 @@ EZFinance is a comprehensive platform tailored to streamline business management
 - **Backend**: Node.js, Express.js
 - **Database**: PostgreSQL hosted on AWS RDS
 - **ORM**: Sequelize
+- **Docker**: Dockerized containers for frontend and backend services to simplify deployment and ensure consistency across different environments.
 
 ## Setup and Deployment
 
 To install and run EZFinance locally, follow these steps:
+
+### Local Setup
 
 1. Clone the repository:
 
@@ -84,11 +90,43 @@ To install and run EZFinance locally, follow these steps:
     - Frontend: [http://localhost:3000](http://localhost:3000)
     - Backend: Ensure it runs on port `5000`.
 
+### Dockerized Setup
+
+To run EZFinance with Docker, follow these steps:
+
+1. Clone the repository and navigate to the project directory:
+
+    ```bash
+    git clone https://github.com/shreyshah-06/ezfinance.git
+    cd ezfinance
+    ```
+
+2. Build the Docker containers:
+
+    ```bash
+    docker-compose up --build
+    ```
+
+    This command will build both the frontend and backend containers based on the Dockerfiles and start them.
+
+3. Access the application:
+
+    - Frontend: [http://localhost:3000](http://localhost:3000)
+    - Backend: The backend will be accessible on port `5000`.
+
+4. To stop the Docker containers:
+
+    ```bash
+    docker-compose down
+    ```
+
+This setup uses Docker to streamline the deployment and eliminates the need for manual installations of dependencies or database setup.
+
 ## Usage
 
-Unlock the full potential of EZFinance with these steps::
+Unlock the full potential of EZFinance with these steps:
 
-- **Experience the Platform**: Access the [Live Demo](https://ez-finance-shrey.netlify.app/) or set up the project locally for hands-on exploration.
+- **Experience the Platform**: Access the [Live Demo](https://ez-finance-shrey.netlify.app/) or set up the project locally or with Docker for hands-on exploration.
 - **Simplify Business Operations**: Leverage interactive dashboards to seamlessly manage invoices, monitor expenses, and track performance metrics in real-time.
 - **Secure Your Data**: Log in with robust authentication to gain personalized insights and ensure data privacy.
 
