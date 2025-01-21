@@ -21,3 +21,9 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Ignore Docker-related files that shouldn't be committed
+.dockerignore
+
+# Optional: Ignore Dockerfile for testing only (not recommended for production)
+Dockerfile.test
