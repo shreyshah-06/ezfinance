@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -7,7 +7,8 @@ import {
   InputAdornment,
   Box,
   Grid,
-  Link
+  Link,
+  Autocomplete,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,6 +18,45 @@ import AppLogo from "../assets/ezfinance.png";
 import welcomeAnimation from "../assets/welcomeAnimation.json";
 import signupAnimation from "../assets/singupAnimation.json";
 import axiosInstance from "../helper/axios";
+
+const indianStates = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Dadra and Nagar Haveli and Daman and Diu",
+  "Lakshadweep",
+  "Delhi",
+  "Puducherry",
+  "Ladakh",
+  "Jammu and Kashmir",
+];
 
 const Signup = () => {
   const [signupData, setSignupData] = useState({
@@ -28,34 +68,29 @@ const Signup = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [isStateTouched, setIsStateTouched] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSignupData({ ...signupData, [name]: value });
   };
 
+  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/; // password validation
+  useEffect(() => {
+    // Check if all fields are filled and valid
+    const isValid =
+      signupData.companyName.trim() !== "" &&
+      signupData.email.trim() !== "" &&
+      passwordRegex.test(signupData.password) &&
+      signupData.password === signupData.confirmPassword &&
+      signupData.state !== "";
+
+    setIsFormValid(isValid);
+  }, [signupData]);
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
-    if (!passwordRegex.test(signupData.password)) {
-      toast.error(
-        "Password must contain at least 8 characters, including one uppercase letter, one lowercase letter, and one number.",
-        {
-          position: "top-right",
-          autoClose: 2000,
-        }
-      );
-      return;
-    }
-
-    if (signupData.password !== signupData.confirmPassword) {
-      toast.error("Passwords do not match.", {
-        position: "top-right",
-        autoClose: 2000,
-      });
-      return;
-    }
+    if (!isFormValid) return;
 
     try {
       const response = await axiosInstance.post("/register", signupData);
@@ -243,6 +278,16 @@ const Signup = () => {
               },
             },
           }}
+          error={
+            !passwordRegex.test(signupData.password) &&
+            signupData.password !== ""
+          }
+          helperText={
+            !passwordRegex.test(signupData.password) &&
+            signupData.password !== ""
+              ? "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number."
+              : ""
+          }
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -276,6 +321,16 @@ const Signup = () => {
               },
             },
           }}
+          error={
+            signupData.confirmPassword !== signupData.password &&
+            signupData.confirmPassword !== ""
+          }
+          helperText={
+            signupData.confirmPassword !== signupData.password &&
+            signupData.confirmPassword !== ""
+              ? "Passwords do not match."
+              : ""
+          }
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -289,25 +344,47 @@ const Signup = () => {
             ),
           }}
         />
-        <TextField
-          label="State"
-          name="state"
-          value={signupData.state}
-          onChange={handleInputChange}
-          fullWidth
-          variant="outlined"
-          size="small"
-          sx={{
-            mb: 2,
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: "#b6d1a4",
-              },
-              "&:hover fieldset": {
-                borderColor: "#627254",
-              },
-            },
+        <Autocomplete
+          options={indianStates}
+          value={signupData.state || null}
+          onChange={(event, newValue) => {
+            setSignupData((prev) => ({ ...prev, state: newValue || "" }));
+            setIsStateTouched(true);
           }}
+          onBlur={() => setIsStateTouched(true)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="State"
+              fullWidth
+              variant="outlined"
+              size="small"
+              required
+              error={!signupData.state.trim() && isStateTouched}
+              helperText={
+                !signupData.state.trim() && isStateTouched
+                  ? "State is required"
+                  : ""
+              }
+              sx={{
+                mb: 2,
+                "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                    borderColor:
+                      !signupData.state.trim() && isStateTouched
+                        ? "red"
+                        : "#b6d1a4",
+                  },
+                  "&:hover fieldset": {
+                    borderColor:
+                      !signupData.state.trim() && isStateTouched
+                        ? "red"
+                        : "#627254",
+                  },
+                },
+              }}
+            />
+          )}
         />
 
         <Box textAlign="center" mb={2}>
@@ -315,6 +392,7 @@ const Signup = () => {
             variant="contained"
             fullWidth
             onClick={handleSubmit}
+            disabled={!isFormValid}
             sx={{
               backgroundColor: "#627254",
               color: "#FBFADA",
@@ -334,9 +412,7 @@ const Signup = () => {
           </Button>
         </Box>
 
-        <Typography
-          align="center"
-        >
+        <Typography align="center">
           Already have an account?{" "}
           <Link href="/login" underline="hover" color="primary">
             Login
