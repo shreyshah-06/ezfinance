@@ -76,9 +76,9 @@ const Signup = () => {
     setSignupData({ ...signupData, [name]: value });
   };
 
-  const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/; // password validation
   useEffect(() => {
     // Check if all fields are filled and valid
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/; // password validation
     const isValid =
       signupData.companyName.trim() !== "" &&
       signupData.email.trim() !== "" &&
@@ -88,6 +88,7 @@ const Signup = () => {
 
     setIsFormValid(isValid);
   }, [signupData]);
+  const passwordCheck = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/; // password validation
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
@@ -279,11 +280,11 @@ const Signup = () => {
             },
           }}
           error={
-            !passwordRegex.test(signupData.password) &&
+            !passwordCheck.test(signupData.password) &&
             signupData.password !== ""
           }
           helperText={
-            !passwordRegex.test(signupData.password) &&
+            !passwordCheck.test(signupData.password) &&
             signupData.password !== ""
               ? "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number."
               : ""
