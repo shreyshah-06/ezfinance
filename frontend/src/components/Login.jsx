@@ -10,6 +10,8 @@ import {
   Link,
   IconButton,
   InputAdornment,
+  CircularProgress,
+  Backdrop,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import Lottie from "lottie-react";
@@ -21,6 +23,7 @@ import axiosInstance from "../helper/axios";
 const Login = () => {
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,6 +36,10 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Set loading state to true
+    setIsLoading(true);
+    
     try {
       const response = await axiosInstance.post("/login", loginData);
       if (typeof response.data.token !== "undefined") {
@@ -44,6 +51,9 @@ const Login = () => {
         position: "top-right",
         autoClose: 2000,
       });
+    } finally {
+      // Set loading state back to false regardless of success or failure
+      setIsLoading(false);
     }
   };
 
@@ -57,8 +67,37 @@ const Login = () => {
         background:
           "linear-gradient(90deg, #7a8771 0%, #76885b 29%, #627254 100%)",
         overflow: "hidden",
+        position: "relative",
       }}
     >
+      {/* Fullscreen Overlay Loader */}
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: 'rgba(98, 114, 84, 0.7)',
+          position: 'absolute',
+        }}
+        open={isLoading}
+      >
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2
+        }}>
+          <CircularProgress 
+            size={60} 
+            thickness={4} 
+            sx={{ color: '#FBFADA' }}
+          />
+          <Typography variant="h6" color="#FBFADA" fontWeight="bold">
+            Logging in...
+          </Typography>
+        </Box>
+      </Backdrop>
+
       {/* Left-Side Animation */}
       <Grid
         item
