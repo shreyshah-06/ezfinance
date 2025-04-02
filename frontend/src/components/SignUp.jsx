@@ -96,7 +96,6 @@ const Signup = () => {
     try {
       const response = await axiosInstance.post("/register", signupData);
       toast.success("Signup successful!");
-      console.log("Signup response:", response.data);
     } catch (error) {
       toast.error("Signup failed. Please try again.", {
         position: "top-right",

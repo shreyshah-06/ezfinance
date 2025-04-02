@@ -150,7 +150,6 @@ function AddInvoice() {
       };
       const response = await axiosInstance.post("/invoice/add", invoiceData);
       navigate("/invoice");
-      console.log("Invoice saved successfully:", response.data);
     } catch (error) {
       toast.error("Error Adding Invoice", {
         position: "top-right",

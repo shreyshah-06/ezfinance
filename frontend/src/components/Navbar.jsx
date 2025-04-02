@@ -88,7 +88,6 @@ const Navbar = () => {
       });
 
       if (response.status === 200) {
-        console.log("heree");
         toast.success("Password changed successfully!", {
           position: "top-right",
           autoClose: 2000,
