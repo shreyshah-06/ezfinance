@@ -11,6 +11,7 @@ const expenseRoutes = require("./expense");
 const auditRoutes = require("./audit");
 const gstRoutes = require("./gst");
 const dashboardRoutes = require("./dashboard");
+const otpRoutes = require("./otp");
 
 const router = express.Router();
 
@@ -26,5 +27,6 @@ router.use("/expense", expenseRoutes);
 router.use("/audit", auditRoutes);
 router.use("/gst", gstRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/otp", otpRoutes);
 
 module.exports = router;
