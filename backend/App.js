@@ -7,6 +7,8 @@ const rateLimit = require("express-rate-limit");
 
 const PORT = process.env.PORT || 5000;
 
+app.set('trust proxy', 1); // trust first proxy
+
 // Set up Rate Limiting
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minutes
