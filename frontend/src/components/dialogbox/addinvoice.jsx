@@ -148,7 +148,7 @@ function AddInvoice() {
           taxPercentage: product.tax,
         })),
       };
-      const response = await axiosInstance.post("/invoice/add", invoiceData);
+      await axiosInstance.post("/invoice/add", invoiceData);
       navigate("/invoice");
     } catch (error) {
       toast.error("Error Adding Invoice", {
