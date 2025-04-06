@@ -10,6 +10,7 @@ import {
   Link,
   Autocomplete,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { ToastContainer, toast } from "react-toastify";
@@ -79,6 +80,10 @@ const Signup = () => {
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
 
+  // For OTP resend cooldown
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [cooldownActive, setCooldownActive] = useState(false);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setSignupData({ ...signupData, [name]: value });
@@ -96,6 +101,27 @@ const Signup = () => {
 
     setIsFormValid(isValid);
   }, [signupData]);
+
+  // Cooldown timer effect
+  useEffect(() => {
+    let intervalId;
+    
+    if (cooldownActive && resendCooldown > 0) {
+      intervalId = setInterval(() => {
+        setResendCooldown((prev) => {
+          if (prev <= 1) {
+            setCooldownActive(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [cooldownActive, resendCooldown]);
   
   const passwordCheck = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/; // password validation
   
@@ -113,6 +139,12 @@ const Signup = () => {
     setShowOtpSection(true);
   };
 
+  const startResendCooldown = () => {
+    // Set 3 minute (180 seconds) cooldown
+    setResendCooldown(180);
+    setCooldownActive(true);
+  };
+
   const handleSendOtp = async () => {
     try {
       setOtpLoading(true);
@@ -124,6 +156,8 @@ const Signup = () => {
         setUserId(response.data.tokenId);
         toast.success("OTP sent to your email");
         setOtpSent(true);
+        // Start cooldown timer
+        startResendCooldown();
       } else {
         toast.error("Failed to send OTP");
       }
@@ -190,6 +224,15 @@ const Signup = () => {
     setShowOtpSection(false);
     setOtpSent(false);
     setOtp("");
+    setCooldownActive(false);
+    setResendCooldown(0);
+  };
+
+   // Format remaining time for display
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
   return (
@@ -591,21 +634,24 @@ const Signup = () => {
                     }}
                   />
                   <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                    <Button
+                  <Button
                       variant="outlined"
                       fullWidth
                       onClick={handleSendOtp}
-                      disabled={otpLoading}
+                      disabled={cooldownActive || otpLoading}
                       sx={{
-                        borderColor: "#627254",
-                        color: "#627254",
+                        borderColor: cooldownActive ? "#c5c5c5" : "#627254",
+                        color: cooldownActive ? "#9e9e9e" : "#627254",
                         fontWeight: "medium",
                         height: 40,
                         fontSize: "0.85rem",
                         textTransform: "none",
+                        position: "relative",
                       }}
+                      startIcon={otpLoading && <CircularProgress size={16} color="inherit" />}
                     >
-                      Resend OTP
+                      {otpLoading ? "Sending..." : 
+                       cooldownActive ? `Resend in ${formatTime(resendCooldown)}` : "Resend OTP"}
                     </Button>
                     <Button
                       variant="contained"
