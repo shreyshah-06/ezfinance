@@ -1,8 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { createAccessToken } = require("../utils/token");
-const { validateEmail, validatePassword } = require("../utils/validation");
-
+const { validatePassword } = require("../utils/validation");
 // Login function to authenticate the user
 const Login = async (req, res) => {
     try {
@@ -38,13 +37,6 @@ const Login = async (req, res) => {
     try {
       const { companyName, password: plainTextPassword, email, State } = req.body;  // Extract fields from request body
       
-      // Validate email format
-      if (!validateEmail(email)) {
-        return res
-          .status(400)
-          .json({ msg: "Please provide a valid email address." });  // Return error if email is invalid
-      }
-  
       // Validate password strength
       if (!validatePassword(plainTextPassword)) {
         return res.status(400).json({
@@ -58,7 +50,7 @@ const Login = async (req, res) => {
       // Create a new user in the database
       const newUser = await User.create({ companyName, password, email, State });
       if (!newUser) {
-        return res.status(400).send({ message: "Email already exists" });  // Return error if email already exists
+        return res.status(400).send({ message: "Failed to Register" });  // Return error if user creation fails
       }
   
       // Return success with new user data
@@ -111,5 +103,5 @@ const Login = async (req, res) => {
       res.status(500).json({ error: "Internal server error" }); 
     }
   };
-  
-  module.exports = { Register, Login, changePassword };  // Export the functions for use in routes
+
+module.exports = { Register, Login, changePassword};

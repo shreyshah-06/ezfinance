@@ -1,5 +1,5 @@
 .env
-
+/node_modules
 # Ignore Docker-related files that shouldn't be committed
 .dockerignore
 
