@@ -1,17 +1,13 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const helmet = require("helmet");
 require("dotenv").config();
 const db = require("./config/database");
 const rateLimit = require("express-rate-limit");
-const apiKeyValidator = require("./middleware/apiKeyValidator")
 
 const PORT = process.env.PORT || 5000;
 
 app.set('trust proxy', 1); // trust first proxy
-
-app.use(helmet()); // for security purposes
 
 // Set up Rate Limiting
 const limiter = rateLimit({
@@ -42,8 +38,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
-
-app.use(apiKeyValidator); // Middleware to validate API key
 
 app.use("/api", require("./routes/index"));
 
