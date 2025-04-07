@@ -5,6 +5,7 @@ const helmet = require("helmet");
 require("dotenv").config();
 const db = require("./config/database");
 const rateLimit = require("express-rate-limit");
+const apiKeyValidator = require("./middleware/apiKeyValidator")
 
 const PORT = process.env.PORT || 5000;
 
@@ -41,6 +42,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
+
+app.use(apiKeyValidator); // Middleware to validate API key
 
 app.use("/api", require("./routes/index"));
 

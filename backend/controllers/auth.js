@@ -2,6 +2,8 @@ const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { createAccessToken } = require("../utils/token");
 const { validatePassword } = require("../utils/validation");
+const sequelize = require("../config/database");
+
 // Login function to authenticate the user
 const Login = async (req, res) => {
     try {
@@ -104,4 +106,40 @@ const Login = async (req, res) => {
     }
   };
 
-module.exports = { Register, Login, changePassword};
+const deleteUser = async(req, res) => {
+  // Start a new transaction to ensure the deletion is atomic
+  // const transaction = await sequelize.transaction();
+  try {
+    const email = req.body;
+    if(!email){
+      return res.status(400).json({error : "Email is required"});
+    }
+    // Find the user to be deleted
+    // const user = await User.findOne({ where: {email}, transaction });
+    // if (!user) {
+    //   // Rollback transaction if the user doesn't exist
+    //   await transaction.rollback();
+    //   return res.status(404).json({ error: "User not found" });
+    // }
+    const deletedUser = await User.destroy({
+      where: { email}
+    });
+     // Check if the deletion was successful
+     if (deletedUser === 0) {
+      await transaction.rollback(); // Rollback if no invoice was deleted
+      return res.status(404).json({ error: "Error while Deletion" });
+    }
+
+    // Commit the transaction to finalize the deletion
+    // await transaction.commit();
+
+    // Respond with a success message
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    // Rollback in case of an error to ensure data consistency
+    // await transaction.rollback();
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+  
+module.exports = { Register, Login, changePassword, deleteUser};

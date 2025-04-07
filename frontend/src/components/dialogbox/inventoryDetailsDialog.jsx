@@ -8,22 +8,22 @@ import {
   Button,
 } from "@mui/material";
 
-const InventoryDetailsDialog = ({ open, onClose, details }) => {
+const InventoryDetailsDialog = ({ open, onClose, itemDetails}) => {
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Item Details</DialogTitle>
       <DialogContent>
-        {details ? (
+        {itemDetails ? (
           <>
             <DialogContentText>
-              <strong>Model:</strong> {details.model}
+              <strong>Model:</strong> {itemDetails.model}
             </DialogContentText>
             <DialogContentText>
-              <strong>Serial Number:</strong> {details.serialNumber}
+              <strong>Serial Number:</strong> {itemDetails.serialNumber}
             </DialogContentText>
             <DialogContentText>
               <strong>Quantity:</strong>{" "}
-              {details.quantity > 0 ? details.quantity : "Out of Stock"}
+              {itemDetails.quantity > 0 ? itemDetails.quantity : "Out of Stock"}
             </DialogContentText>
           </>
         ) : (
