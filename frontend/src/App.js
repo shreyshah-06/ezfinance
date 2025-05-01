@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
+import ReactGA from 'react-ga4';
 import Login from "./components/Login";
 import Signup from "./components/SignUp";
 import Dashboard from "./components/Dashboard";
@@ -24,7 +26,15 @@ const PrivateRoute = ({ element, redirectTo = "/login" }) => {
   return isAuthenticated() ? element : <Navigate to={redirectTo} />;
 };
 
+ReactGA.initialize("G-HCQEWR8XM7");
+
 function App() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Send page view to Google Analytics on route change
+    ReactGA.send({ hitType: "pageview", page: location.pathname + location.search });
+  }, [location]);
   return (
     <BrowserRouter>
       <Routes>
