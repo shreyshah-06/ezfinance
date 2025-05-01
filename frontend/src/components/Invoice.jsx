@@ -28,6 +28,7 @@ import SideBar from "./sidebar";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../helper/axios";
 import InvoiceDetails from "../components/dialogbox/invoiceDetails";
+import ReactGA from "react-ga4";
 
 const GradientBackground = styled(Box)(() => ({
   display: "flex",
@@ -88,6 +89,10 @@ const Invoice = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: "/invoice",
+    });
     const fetchInvoices = async () => {
       try {
         const response = await axiosInstance.get("/invoice/getall");
