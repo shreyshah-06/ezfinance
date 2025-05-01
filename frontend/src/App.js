@@ -26,17 +26,20 @@ const PrivateRoute = ({ element, redirectTo = "/login" }) => {
   return isAuthenticated() ? element : <Navigate to={redirectTo} />;
 };
 
+const AnalyticsTracker = () => {
+  const location = useLocation();
+  useEffect(() => {
+    ReactGA.send({ hitType: "pageview", page: location.pathname + location.search });
+  }, [location]);
+  return null;
+};
+
 ReactGA.initialize("G-HCQEWR8XM7");
 
 function App() {
-  const location = useLocation();
-
-  useEffect(() => {
-    // Send page view to Google Analytics on route change
-    ReactGA.send({ hitType: "pageview", page: location.pathname + location.search });
-  }, [location]);
   return (
     <BrowserRouter>
+      <AnalyticsTracker/>
       <Routes>
         {/* Redirect root to login */}
         <Route path="/" element={<Navigate to="/login" />} />
