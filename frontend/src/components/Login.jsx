@@ -92,8 +92,8 @@ const Login = () => {
             thickness={4} 
             sx={{ color: '#FBFADA' }}
           />
-          <Typography variant="h6" color="#FBFADA" fontWeight="bold">
-            Logging in...
+         <Typography variant="h6" color="#FBFADA" fontWeight="bold">
+            Logging in... please be patient — our free server is doing its best!
           </Typography>
         </Box>
       </Backdrop>
